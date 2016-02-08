@@ -9,8 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -26,9 +25,13 @@ import java.io.*;
 
 public class ControllerMemo {
     @FXML
-    TextField url, iccid, address, data, clientName, clientPhoneNumber, comment, urlSt, iccidSt, fio, dataBdayAndLocation, phoneNumber;
+    TextField url, iccidMemo,iccidSt, address, data, fioMemo, fioSt, phoneMemo, phoneSt, comment, dataBdayAndLocation;
     @FXML
-    CheckBox authLoopCheckBox, fillCommentCheckBox;
+    CheckBox fillCommentCheckBox;
+    @FXML
+    Tab memoTab,declarationTab;
+    @FXML
+    TabPane tabPane;
     WebClient webClient = new WebClient(BrowserVersion.CHROME);
     HtmlTextInput Iccid, Address, Data, TimeBegin, TimeEnd, ClientName, ClientPhoneNumber,DateBdayAndLocation;
     HtmlTextArea Comment;
@@ -66,7 +69,7 @@ public class ControllerMemo {
         }
     }
 
-    public void IncomingDataMemo() throws IOException { //получаем данные с портала
+    public void GetData() throws IOException { //получаем данные с портала
         clearAllOrNotAll = true;
         ClearAll();
         try {
@@ -75,26 +78,38 @@ public class ControllerMemo {
                 alert.setTitle("Ошибка!");
                 alert.setHeaderText("Недостаточно данных");
                 alert.setContentText("Вставьте ссылку!");
-
                 alert.showAndWait();
-            } else {
-                if (url.getText().contains(defaultURL)) {
+            }
+            else
+            {
+                if (url.getText().contains(defaultURL))
+                {
                     HtmlPage page2 = webClient.getPage(url.getText());
                     Iccid = page2.getFirstByXPath("//input[@id='order_sim_cards_0_iccid']");
-                    iccid.appendText(Iccid.getDefaultValue());
-                    Address = page2.getFirstByXPath("//input[@name='order[delivery_address]']");
                     Data = page2.getFirstByXPath("//input[@name='order[expected_delivery_date]']");
                     TimeBegin = page2.getFirstByXPath("//input[@name='order[expected_delivery_time_begin]']");
                     TimeEnd = page2.getFirstByXPath("//input[@name='order[expected_delivery_time_end]']");
                     ClientName = page2.getFirstByXPath("//input[@name='order[name_data_raw]']");
+                    DateBdayAndLocation = page2.getFirstByXPath("//input[@id='order_birth_data_raw']");
                     ClientPhoneNumber = page2.getFirstByXPath("//input[@name='order[contact_phone]']");
+                    Address = page2.getFirstByXPath("//input[@name='order[delivery_address]']");
                     Comment = page2.getFirstByXPath("//textarea[@name='order[comment]']");
-                    address.appendText(Address.getDefaultValue());
+                    iccidMemo.appendText(Iccid.getDefaultValue());
+                    iccidSt.appendText(Iccid.getDefaultValue());
                     data.appendText(Data.getDefaultValue() + " c " + TimeBegin.getDefaultValue() + " по " + TimeEnd.getDefaultValue());
-                    clientName.appendText(ClientName.getDefaultValue());
-                    clientPhoneNumber.appendText(ClientPhoneNumber.getDefaultValue());
+                    fioMemo.appendText(ClientName.getDefaultValue());
+                    fioSt.appendText(ClientName.getDefaultValue());
+                    String data = DateBdayAndLocation.getDefaultValue().replaceAll("[\\.]","").substring(0,8);
+                    String location = DateBdayAndLocation.getDefaultValue().substring(11,DateBdayAndLocation.getDefaultValue().length());
+                    dataBdayAndLocation.appendText(data+" "+location);
+                    phoneMemo.appendText(ClientPhoneNumber.getDefaultValue());
+                    String ph = ClientPhoneNumber.getDefaultValue().replaceAll("[\\+\\(\\)]",""); //убираем из номера телефона символы + ( )
+                    phoneSt.appendText(ph.substring(1,ph.length())); //добавляем в текстбокс номер телефона без 7-ки.
+                    address.appendText(Address.getDefaultValue());
                     comment.appendText(Comment.getDefaultValue());
-                } else {
+                }
+                else
+                {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Ошибка!");
                     alert.setHeaderText("Неверный формат ссылки.");
@@ -118,21 +133,21 @@ public class ControllerMemo {
         }
     }
 
+
     public void ClearAll() { //стереть все данные
         if (!clearAllOrNotAll) {
             url.clear();
-            urlSt.clear();
         }
         iccidSt.clear();
-        iccid.clear();
+        iccidMemo.clear();
         address.clear();
         data.clear();
-        clientName.clear();
-        clientPhoneNumber.clear();
+        fioSt.clear();
+        phoneMemo.clear();
         comment.clear();
-        fio.clear();
+        fioMemo.clear();
         dataBdayAndLocation.clear();
-        phoneNumber.clear();
+        phoneSt.clear();
         clearAllOrNotAll = false;
     }
 
@@ -189,7 +204,7 @@ public class ControllerMemo {
                 graphics.drawString("Памятка", start - fm.stringWidth("Памятка") / 2, 50);
                 graphics.drawString("ICCID:", start - fm.stringWidth("ICCID:") / 2, 65);
                 graphics.setFont(new Font("default", Font.PLAIN, 12));
-                graphics.drawString(iccid.getText(), start - fm.stringWidth(iccid.getText()) / 2, 80);
+                graphics.drawString(iccidMemo.getText(), start - fm.stringWidth(iccidMemo.getText()) / 2, 80);
                 graphics.setFont(new Font("default", Font.BOLD, 12));
                 graphics.drawString("Адрес доставки:", start - fm.stringWidth("Адрес доставки:") / 2, 95);
                 graphics.setFont(new Font("default", Font.PLAIN, 12));
@@ -201,11 +216,11 @@ public class ControllerMemo {
                 graphics.setFont(new Font("default", Font.BOLD, 12));
                 graphics.drawString("ФИО Клиента:", start - fm.stringWidth("ФИО Клиента:") / 2, 155);
                 graphics.setFont(new Font("default", Font.PLAIN, 12));
-                graphics.drawString(clientName.getText(), start - fm.stringWidth(clientName.getText()) / 2, 170);
+                graphics.drawString(fioMemo.getText(), start - fm.stringWidth(fioMemo.getText()) / 2, 170);
                 graphics.setFont(new Font("default", Font.BOLD, 12));
                 graphics.drawString("Номер телефона:", start - fm.stringWidth("Номер телефона:") / 2, 185);
                 graphics.setFont(new Font("default", Font.PLAIN, 12));
-                graphics.drawString(clientPhoneNumber.getText(), start - fm.stringWidth(clientPhoneNumber.getText()) / 2, 200);
+                graphics.drawString(phoneMemo.getText(), start - fm.stringWidth(phoneMemo.getText()) / 2, 200);
                 graphics.setFont(new Font("default", Font.BOLD, 12));
                 graphics.drawString("Комментарий:", start - fm.stringWidth("Комментарий:") / 2, 215);
                 graphics.setFont(new Font("default", Font.PLAIN, 12));
@@ -244,8 +259,8 @@ public class ControllerMemo {
             return Printable.NO_SUCH_PAGE;
         });
         //проверяем, заполнены ли все поля
-        if (iccid.getText().isEmpty() || address.getText().isEmpty() || data.getText().isEmpty() || clientName.getText().isEmpty()
-                || clientPhoneNumber.getText().isEmpty() || comment.getText().isEmpty()) {
+        if (iccidMemo.getText().isEmpty() || address.getText().isEmpty() || data.getText().isEmpty() || phoneMemo.getText().isEmpty()
+                || phoneMemo.getText().isEmpty() || comment.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Ошибка!");
             alert.setHeaderText("Не все данные получены.");
@@ -262,56 +277,6 @@ public class ControllerMemo {
         }
     }
 
-    public void GetData(){ //парсим данные с портала
-        clearAllOrNotAll = true;
-        ClearAll();
-        try {
-            if (urlSt.getText() == null || urlSt.getText().equals("")) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Ошибка!");
-                alert.setHeaderText("Недостаточно данных");
-                alert.setContentText("Вставьте ссылку!");
-
-                alert.showAndWait();
-            }
-            else {
-                if (urlSt.getText().contains(defaultURL)) {
-                    HtmlPage page2 = webClient.getPage(urlSt.getText());
-                    Iccid = page2.getFirstByXPath("//input[@id='order_sim_cards_0_iccid']");
-                    iccidSt.appendText(Iccid.getDefaultValue());
-                    ClientName = page2.getFirstByXPath("//input[@name='order[name_data_raw]']");
-                    DateBdayAndLocation = page2.getFirstByXPath("//input[@id='order_birth_data_raw']");
-                    ClientPhoneNumber = page2.getFirstByXPath("//input[@name='order[contact_phone]']");
-                    fio.appendText(ClientName.getDefaultValue());
-                    String data = DateBdayAndLocation.getDefaultValue().replaceAll("[\\.]","").substring(0,8);
-                    String location = DateBdayAndLocation.getDefaultValue().substring(11,DateBdayAndLocation.getDefaultValue().length());
-                    dataBdayAndLocation.appendText(data+" "+location);
-                    String ph = ClientPhoneNumber.getDefaultValue().replaceAll("[\\+\\(\\)]",""); //убираем из номера телефона символы + ( )
-                    phoneNumber.appendText(ph.substring(1,ph.length())); //добавляем в текстбокс номер телефона без 7-ки.
-                }
-                else {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Ошибка!");
-                    alert.setHeaderText("Неверный формат ссылки.");
-                    alert.setContentText("Проверьте правильность введеной ссылки.");
-                    alert.showAndWait();
-                }
-            }
-        } catch (NullPointerException npe) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка!");
-            alert.setHeaderText("Данные не считаны.");
-            alert.setContentText("Необходимо перезайти в портал.");
-
-            alert.showAndWait();
-        } catch (IOException ex) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка!");
-            alert.setHeaderText("Проверьте интернет соединение");
-            alert.setContentText("Похоже у вас оборвалось соединение с интернетом...");
-            alert.showAndWait();
-        }
-    }
 
     public void PrintStatement() throws IOException, PrinterException { //выводим на печать заявление
         PDDocument doc = null;
@@ -327,9 +292,9 @@ public class ControllerMemo {
         contentStream.appendRawCommands("5.2 Tc\n");
         contentStream.moveTextPositionByAmount(139, 708); // 140 , 708 //добавляем ID
         contentStream.drawString(iccidSt.getText());
-        String ph1 = phoneNumber.getText().substring(0,3);
-        String ph2 = phoneNumber.getText().substring(4,7);
-        String ph3 = phoneNumber.getText().substring(8,phoneNumber.getText().length());
+        String ph1 = phoneSt.getText().substring(0,3);
+        String ph2 = phoneSt.getText().substring(4,7);
+        String ph3 = phoneSt.getText().substring(8,phoneSt.getText().length());
         contentStream.moveTextPositionByAmount(0,-632); // -1 , -632 //добавляем префикс
         contentStream.drawString(ph1);
         contentStream.moveTextPositionByAmount(50,0); // 50 , 0 //добавляем ещё 3 цифры
@@ -346,16 +311,16 @@ public class ControllerMemo {
         contentStream.moveTextPositionByAmount(37, 0 ); // 37 , 0 //добавляем год рожд.
         contentStream.drawString(year);
         contentStream.appendRawCommands("5.25 Tc\n");
-        if (fio.getText().length()<34){ //проверка на количество символов в строке, если >34, то после 34 перенос на след.строку.
+        if (fioSt.getText().length()<34){ //проверка на количество символов в строке, если >34, то после 34 перенос на след.строку.
             contentStream.moveTextPositionByAmount(-48,31 ); // 140 , 708 //добавляем фио
-            contentStream.drawString(fio.getText());
+            contentStream.drawString(fioSt.getText());
             check = true;
         }
         else {
             contentStream.moveTextPositionByAmount(-48,31 ); // 140 , 708 //добавляем фио
-            contentStream.drawString(fio.getText().substring(0,35));
+            contentStream.drawString(fioSt.getText().substring(0,35));
             contentStream.moveTextPositionByAmount(0,-15 ); // 140 , 708 //добавляем фио
-            contentStream.drawString(fio.getText().substring(35,fio.getText().length()));
+            contentStream.drawString(fioSt.getText().substring(35,fioSt.getText().length()));
             check = false;
         }
         String location = dataBdayAndLocation.getText().substring(8,dataBdayAndLocation.getText().length());
@@ -387,7 +352,7 @@ public class ControllerMemo {
 
 
         doc.save("C:/test.pdf");
-        if (iccidSt.getText().isEmpty() || fio.getText().isEmpty() || dataBdayAndLocation.getText().isEmpty() || phoneNumber.getText().isEmpty())
+        if (iccidSt.getText().isEmpty() || fioSt.getText().isEmpty() || dataBdayAndLocation.getText().isEmpty() || phoneSt.getText().isEmpty())
         {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Ошибка!");
