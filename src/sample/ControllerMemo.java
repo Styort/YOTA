@@ -103,7 +103,7 @@ public class ControllerMemo {
                     String location = DateBdayAndLocation.getDefaultValue().substring(11,DateBdayAndLocation.getDefaultValue().length());
                     dataBdayAndLocation.appendText(data+" "+location);
                     phoneMemo.appendText(ClientPhoneNumber.getDefaultValue());
-                    String ph = ClientPhoneNumber.getDefaultValue().replaceAll("[\\+\\(\\)]",""); //убираем из номера телефона символы + ( )
+                    String ph = ClientPhoneNumber.getDefaultValue().replaceAll("[\\+\\(\\)]",""); //убираем из номера телефона символы '+','(',')'
                     phoneSt.appendText(ph.substring(1,ph.length())); //добавляем в текстбокс номер телефона без 7-ки.
                     address.appendText(Address.getDefaultValue());
                     comment.appendText(Comment.getDefaultValue());
@@ -290,59 +290,59 @@ public class ControllerMemo {
         contentStream.beginText();
         contentStream.setFont(font,12);
         contentStream.appendRawCommands("5.2 Tc\n");
-        contentStream.moveTextPositionByAmount(139, 708); // 140 , 708 //добавляем ID
+        contentStream.moveTextPositionByAmount(139, 708);
         contentStream.drawString(iccidSt.getText());
-        String ph1 = phoneSt.getText().substring(0,3);
+        String ph1 = phoneSt.getText().substring(0,3); //разделяем номер телефона на 3 части (xxx-xxx-xxxx)
         String ph2 = phoneSt.getText().substring(4,7);
         String ph3 = phoneSt.getText().substring(8,phoneSt.getText().length());
-        contentStream.moveTextPositionByAmount(0,-632); // -1 , -632 //добавляем префикс
+        contentStream.moveTextPositionByAmount(0,-632);
         contentStream.drawString(ph1);
-        contentStream.moveTextPositionByAmount(50,0); // 50 , 0 //добавляем ещё 3 цифры
+        contentStream.moveTextPositionByAmount(50,0);
         contentStream.drawString(ph2);
-        contentStream.moveTextPositionByAmount(49,0); // 50,0 //добавляем последние 4 цифры
+        contentStream.moveTextPositionByAmount(49,0);
         contentStream.drawString(ph3);
-        String day = dataBdayAndLocation.getText().substring(0,2);
+        String day = dataBdayAndLocation.getText().substring(0,2); //разделяем дату рождения на 3 части (xx-xx-xxxx)
         String mounth = dataBdayAndLocation.getText().substring(2,4);
         String year = dataBdayAndLocation.getText().substring(4,8);
-        contentStream.moveTextPositionByAmount(-137, 109 ); // -137 , 109 //добавляем день рожд.
+        contentStream.moveTextPositionByAmount(-137, 109 );
         contentStream.drawString(day);
-        contentStream.moveTextPositionByAmount(37, 0 ); // 37 , 0 //добавляем месяц рожд.
+        contentStream.moveTextPositionByAmount(37, 0 );
         contentStream.drawString(mounth);
-        contentStream.moveTextPositionByAmount(37, 0 ); // 37 , 0 //добавляем год рожд.
+        contentStream.moveTextPositionByAmount(37, 0 );
         contentStream.drawString(year);
         contentStream.appendRawCommands("5.25 Tc\n");
         if (fioSt.getText().length()<34){ //проверка на количество символов в строке, если >34, то после 34 перенос на след.строку.
-            contentStream.moveTextPositionByAmount(-48,31 ); // 140 , 708 //добавляем фио
+            contentStream.moveTextPositionByAmount(-48,31 );
             contentStream.drawString(fioSt.getText());
             check = true;
         }
         else {
-            contentStream.moveTextPositionByAmount(-48,31 ); // 140 , 708 //добавляем фио
+            contentStream.moveTextPositionByAmount(-48,31 );
             contentStream.drawString(fioSt.getText().substring(0,35));
-            contentStream.moveTextPositionByAmount(0,-15 ); // 140 , 708 //добавляем фио
+            contentStream.moveTextPositionByAmount(0,-15 );
             contentStream.drawString(fioSt.getText().substring(35,fioSt.getText().length()));
             check = false;
         }
         String location = dataBdayAndLocation.getText().substring(8,dataBdayAndLocation.getText().length());
         if (location.length()<21){ //проверка на количество символов в строке, если >21, то после 21 перенос на след.строку.
             if(check){
-                contentStream.moveTextPositionByAmount(162,-30 ); // 140 , 708 //добавляем фио
+                contentStream.moveTextPositionByAmount(162,-30 );
                 contentStream.drawString(location);
             }
             else {
-                contentStream.moveTextPositionByAmount(162,-15 ); // 140 , 708 //добавляем фио
+                contentStream.moveTextPositionByAmount(162,-15 );
                 contentStream.drawString(location);
             }
         } else {
             if(check){
-                contentStream.moveTextPositionByAmount(162,-30 ); // 140 , 708 //добавляем адр м.ж.
+                contentStream.moveTextPositionByAmount(162,-30 );
                 contentStream.drawString(location.substring(0, 22));
-                contentStream.moveTextPositionByAmount(-187, -15); // 140 , 708 //добавляем адр м.ж.
+                contentStream.moveTextPositionByAmount(-187, -15);
                 contentStream.drawString(location.substring(22,location.length()));
             } else {
-                contentStream.moveTextPositionByAmount(162,-15 ); // 140 , 708 //добавляем адр м.ж.
+                contentStream.moveTextPositionByAmount(162,-15 );
                 contentStream.drawString(location.substring(0, 22));
-                contentStream.moveTextPositionByAmount(-187,-15 ); // 140 , 708 //добавляем адр м.ж.
+                contentStream.moveTextPositionByAmount(-187,-15 );
                 contentStream.drawString(location.substring(22,location.length()));
             }
 
