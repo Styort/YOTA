@@ -4,7 +4,6 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -45,35 +44,23 @@ public class ControllerMemo {
     boolean checkLineIssue = false;
     boolean clearAllOrNotAll = false;
     boolean loopLogin = false;
-    public void LoopAuth() { //автологин каждые 15 мин.
-           timeredLogin = new Thread(() -> {
-               try{
-                   while (true) {
-                       Platform.runLater(() -> {
-                           try {
-                               info=false;
-                               LogInYOTA();
-                           } catch (IOException | InterruptedException e) {
-                               e.printStackTrace();
-                           }
-                       });
-                       try {
-                           Thread.sleep(1000*60*15);
-                       } catch (InterruptedException e) {
-                           e.printStackTrace();
-                       }
-                   }
-               }
-               catch (Exception e) {
-                   System.out.print("End...");
-               }
-           });
-            timeredLogin.start();
-        if (timeredLogin != null) {
-            timeredLogin.interrupt();
-            info = true;
-        }
 
+    public void loopAuth() { //Авторизация каждые 15мин.
+        timeredLogin = new Thread() {
+            @Override
+            public void run() {
+                while(true) {
+                    try {
+                        Thread.sleep(1000*60*15);
+                        info=false;
+                        LogInYOTA();
+                    } catch (InterruptedException | IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        timeredLogin.start();
     }
 
     public void GetData() throws IOException { //получаем данные с портала
@@ -109,8 +96,9 @@ public class ControllerMemo {
                     data.appendText(Data.getDefaultValue() + " c " + TimeBegin.getDefaultValue() + " по " + TimeEnd.getDefaultValue());
                     fioMemo.appendText(ClientName.getDefaultValue());
                     fioSt.appendText(ClientName.getDefaultValue());
-                    String data = DateBdayAndLocation.getDefaultValue().substring(0,10);
-                    String location = DateBdayAndLocation.getDefaultValue().substring(13,DateBdayAndLocation.getDefaultValue().length());
+                    String dl = DateBdayAndLocation.getDefaultValue();
+                    String data = dl.substring(0, 10);
+                    String location = dl.substring(10, dl.length());
                     dataBdayAndLocation.appendText(data+" "+location);
                     phoneMemo.appendText(ClientPhoneNumber.getDefaultValue());
                     String ph = ClientPhoneNumber.getDefaultValue().replaceAll("[\\+\\(\\)]",""); //убираем из номера телефона символы '+','(',')'
@@ -190,6 +178,7 @@ public class ControllerMemo {
             HtmlPage page1 = webClient.getPage("https://partner.yota.ru/rd/login");
             HtmlForm form = page1.getFirstByXPath("//form[@action='/rd/login_check']");
 
+            //Заполняем форму
             HtmlTextInput login = form.getInputByName("_username");
             HtmlPasswordInput password = form.getInputByName("_password");
             login.setValueAttribute("login");
@@ -197,13 +186,26 @@ public class ControllerMemo {
             HtmlSubmitInput button = page1.getFirstByXPath("//input[@id='send_id' and @type='submit']");
             button.click();
 
-            if (info) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Информация");
+
+            page1 = webClient.getPage("https://partner.yota.ru/rd/vox/order/search");
+            //Проверяем прошла ли авторизация.
+            if (page1.getUrl().toString().contains("https://partner.yota.ru/rd/vox/order/search")){
+                if (info) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Информация");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Авторизация прошла успешно!");
+                    alert.showAndWait();
+                }
+            }
+            else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Ошибка");
                 alert.setHeaderText(null);
-                alert.setContentText("Авторизация прошла успешно!");
+                alert.setContentText("Произошла ошибка при авторизации!");
                 alert.showAndWait();
             }
+
         } catch (IOException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка!");
@@ -212,7 +214,7 @@ public class ControllerMemo {
             alert.showAndWait();
         }
         if(!loopLogin){
-            LoopAuth();
+            loopAuth(); //Запуск авторизации каждые 15 мин.
             loopLogin=true;
         }
     }
