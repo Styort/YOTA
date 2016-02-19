@@ -25,7 +25,8 @@ import java.io.*;
 
 public class ControllerMemo {
     @FXML
-    TextField url, iccidMemo,iccidSt, address, data, fioMemo, fioSt, phoneMemo, phoneSt, comment, dataBdayAndLocation;
+    TextField url, iccidMemo,iccidSt, address, data, fioMemo, fioSt, phoneMemo, phoneSt
+            , comment, dataBdayAndLocation, passportID, dateOfIssue,issueBy, registration;
     @FXML
     CheckBox fillCommentCheckBox;
     @FXML
@@ -33,40 +34,46 @@ public class ControllerMemo {
     @FXML
     TabPane tabPane;
     WebClient webClient = new WebClient(BrowserVersion.CHROME);
-    HtmlTextInput Iccid, Address, Data, TimeBegin, TimeEnd, ClientName, ClientPhoneNumber,DateBdayAndLocation;
+    HtmlTextInput Iccid, Address, Data, TimeBegin, TimeEnd, ClientName, ClientPhoneNumber
+            ,DateBdayAndLocation,PassportID,DateOfIssueAndIssueBy,Registration;
     HtmlTextArea Comment;
     String defaultURL = "https://partner.yota.ru/rd/vox/order/edit/";
+    String pathToDesk = System.getProperty("user.home") + "/Desktop";
     Thread timeredLogin;
     boolean info = true;
     boolean check = false;
+    boolean checkLineIssue = false;
     boolean clearAllOrNotAll = false;
     boolean loopLogin = false;
-
-    public void LoopAuth() throws InterruptedException { //автологин каждые 15 мин.
-            timeredLogin = new Thread(() -> {
-                try {
-                    while (true) {
-                        Platform.runLater(() -> {
-                            try {
-                                info = false;
-                                LogInYOTA();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                        Thread.sleep(1000 * 60 * 15);
-                    }
-                } catch (Exception e) {
-                    System.out.print("End...");
-                }
-            });
+    public void LoopAuth() { //автологин каждые 15 мин.
+           timeredLogin = new Thread(() -> {
+               try{
+                   while (true) {
+                       Platform.runLater(() -> {
+                           try {
+                               info=false;
+                               LogInYOTA();
+                           } catch (IOException | InterruptedException e) {
+                               e.printStackTrace();
+                           }
+                       });
+                       try {
+                           Thread.sleep(1000*60*15);
+                       } catch (InterruptedException e) {
+                           e.printStackTrace();
+                       }
+                   }
+               }
+               catch (Exception e) {
+                   System.out.print("End...");
+               }
+           });
             timeredLogin.start();
         if (timeredLogin != null) {
             timeredLogin.interrupt();
             info = true;
         }
+
     }
 
     public void GetData() throws IOException { //получаем данные с портала
@@ -89,24 +96,38 @@ public class ControllerMemo {
                     Data = page2.getFirstByXPath("//input[@name='order[expected_delivery_date]']");
                     TimeBegin = page2.getFirstByXPath("//input[@name='order[expected_delivery_time_begin]']");
                     TimeEnd = page2.getFirstByXPath("//input[@name='order[expected_delivery_time_end]']");
-                    ClientName = page2.getFirstByXPath("//input[@name='order[name_data_raw]']");
-                    DateBdayAndLocation = page2.getFirstByXPath("//input[@id='order_birth_data_raw']");
-                    ClientPhoneNumber = page2.getFirstByXPath("//input[@name='order[contact_phone]']");
-                    Address = page2.getFirstByXPath("//input[@name='order[delivery_address]']");
+                    ClientName = page2.getFirstByXPath("//input[@id='order_personal_data_name_data_raw']");
+                    DateBdayAndLocation = page2.getFirstByXPath("//input[@id='order_personal_data_birth_data_raw']");
+                    ClientPhoneNumber = page2.getFirstByXPath("//input[@id='order_personal_data_contact_phone']");
+                    Address = page2.getFirstByXPath("//input[@id='order_delivery_address']");
                     Comment = page2.getFirstByXPath("//textarea[@name='order[comment]']");
+                    PassportID = page2.getFirstByXPath("//input[@id='order_personal_data_document_number_raw']");
+                    DateOfIssueAndIssueBy = page2.getFirstByXPath("//input[@id='order_personal_data_document_issue_raw']");
+                    Registration = page2.getFirstByXPath("//input[@id='order_personal_data_address']");
                     iccidMemo.appendText(Iccid.getDefaultValue());
                     iccidSt.appendText(Iccid.getDefaultValue());
                     data.appendText(Data.getDefaultValue() + " c " + TimeBegin.getDefaultValue() + " по " + TimeEnd.getDefaultValue());
                     fioMemo.appendText(ClientName.getDefaultValue());
                     fioSt.appendText(ClientName.getDefaultValue());
-                    String data = DateBdayAndLocation.getDefaultValue().replaceAll("[\\.]","").substring(0,8);
-                    String location = DateBdayAndLocation.getDefaultValue().substring(11,DateBdayAndLocation.getDefaultValue().length());
+                    String data = DateBdayAndLocation.getDefaultValue().substring(0,10);
+                    String location = DateBdayAndLocation.getDefaultValue().substring(13,DateBdayAndLocation.getDefaultValue().length());
                     dataBdayAndLocation.appendText(data+" "+location);
                     phoneMemo.appendText(ClientPhoneNumber.getDefaultValue());
                     String ph = ClientPhoneNumber.getDefaultValue().replaceAll("[\\+\\(\\)]",""); //убираем из номера телефона символы '+','(',')'
                     phoneSt.appendText(ph.substring(1,ph.length())); //добавляем в текстбокс номер телефона без 7-ки.
                     address.appendText(Address.getDefaultValue());
                     comment.appendText(Comment.getDefaultValue());
+                    if(!PassportID.getDefaultValue().isEmpty()){
+                        passportID.appendText(PassportID.getDefaultValue());
+                    }
+                    String passDateAndIssueBy = DateOfIssueAndIssueBy.getDefaultValue();
+                    if(!passDateAndIssueBy.isEmpty()){
+                        dateOfIssue.appendText(passDateAndIssueBy.substring(0,10));
+                        issueBy.appendText(passDateAndIssueBy.substring(11,passDateAndIssueBy.length()));
+                    }
+                    if(!Registration.getDefaultValue().isEmpty()){
+                        registration.appendText(Registration.getDefaultValue());
+                    }
                 }
                 else
                 {
@@ -148,6 +169,10 @@ public class ControllerMemo {
         fioMemo.clear();
         dataBdayAndLocation.clear();
         phoneSt.clear();
+        passportID.clear();
+        dateOfIssue.clear();
+        issueBy.clear();
+        registration.clear();
         clearAllOrNotAll = false;
     }
 
@@ -279,96 +304,180 @@ public class ControllerMemo {
 
 
     public void PrintStatement() throws IOException, PrinterException { //выводим на печать заявление
-        PDDocument doc = null;
-        doc = PDDocument.load(new File("C:/DocZ.pdf"));
-        PDDocumentCatalog cat = doc.getDocumentCatalog();
-        PDPage page = (PDPage)cat.getPages().get( 0 );
-        doc.addPage(page);
-        PDType0Font font = PDType0Font.load(doc, new File("C:/Windows/Fonts/cour.ttf"));
-
-        PDPageContentStream contentStream = new PDPageContentStream(doc, page, true, true);
-        contentStream.beginText();
-        contentStream.setFont(font,12);
-        contentStream.appendRawCommands("5.2 Tc\n");
-        contentStream.moveTextPositionByAmount(139, 708);
-        contentStream.drawString(iccidSt.getText());
-        String ph1 = phoneSt.getText().substring(0,3); //разделяем номер телефона на 3 части (xxx-xxx-xxxx)
-        String ph2 = phoneSt.getText().substring(4,7);
-        String ph3 = phoneSt.getText().substring(8,phoneSt.getText().length());
-        contentStream.moveTextPositionByAmount(0,-632);
-        contentStream.drawString(ph1);
-        contentStream.moveTextPositionByAmount(50,0);
-        contentStream.drawString(ph2);
-        contentStream.moveTextPositionByAmount(49,0);
-        contentStream.drawString(ph3);
-        String day = dataBdayAndLocation.getText().substring(0,2); //разделяем дату рождения на 3 части (xx-xx-xxxx)
-        String mounth = dataBdayAndLocation.getText().substring(2,4);
-        String year = dataBdayAndLocation.getText().substring(4,8);
-        contentStream.moveTextPositionByAmount(-137, 109 );
-        contentStream.drawString(day);
-        contentStream.moveTextPositionByAmount(37, 0 );
-        contentStream.drawString(mounth);
-        contentStream.moveTextPositionByAmount(37, 0 );
-        contentStream.drawString(year);
-        contentStream.appendRawCommands("5.25 Tc\n");
-        if (fioSt.getText().length()<34){ //проверка на количество символов в строке, если >34, то после 34 перенос на след.строку.
-            contentStream.moveTextPositionByAmount(-48,31 );
-            contentStream.drawString(fioSt.getText());
-            check = true;
-        }
-        else {
-            contentStream.moveTextPositionByAmount(-48,31 );
-            contentStream.drawString(fioSt.getText().substring(0,35));
-            contentStream.moveTextPositionByAmount(0,-15 );
-            contentStream.drawString(fioSt.getText().substring(35,fioSt.getText().length()));
-            check = false;
-        }
-        String location = dataBdayAndLocation.getText().substring(8,dataBdayAndLocation.getText().length());
-        if (location.length()<21){ //проверка на количество символов в строке, если >21, то после 21 перенос на след.строку.
-            if(check){
-                contentStream.moveTextPositionByAmount(162,-30 );
-                contentStream.drawString(location);
-            }
-            else {
-                contentStream.moveTextPositionByAmount(162,-15 );
-                contentStream.drawString(location);
-            }
-        } else {
-            if(check){
-                contentStream.moveTextPositionByAmount(162,-30 );
-                contentStream.drawString(location.substring(0, 22));
-                contentStream.moveTextPositionByAmount(-187, -15);
-                contentStream.drawString(location.substring(22,location.length()));
-            } else {
-                contentStream.moveTextPositionByAmount(162,-15 );
-                contentStream.drawString(location.substring(0, 22));
-                contentStream.moveTextPositionByAmount(-187,-15 );
-                contentStream.drawString(location.substring(22,location.length()));
-            }
-
-        }
-        contentStream.endText();
-        contentStream.close();
-
-
-        doc.save("C:/test.pdf");
         if (iccidSt.getText().isEmpty() || fioSt.getText().isEmpty() || dataBdayAndLocation.getText().isEmpty() || phoneSt.getText().isEmpty())
         {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Ошибка!");
             alert.setHeaderText("Не все данные получены.");
-            alert.setContentText("Заполните все поля!");
+            alert.setContentText("                                             Поля : " +
+                    "\n'ICCID', 'ФИО', 'Дата и место рождения', 'Номер телефона'" +
+                    " \n                         Обязательны к заполнению!");
             alert.showAndWait();
         }
         else
         {
+            PDDocument doc;
+            doc = PDDocument.load(new File(pathToDesk+"\\DocZ.pdf"));
+            PDDocumentCatalog cat = doc.getDocumentCatalog();
+            PDPage page = cat.getPages().get( 0 );
+            doc.addPage(page);
+            PDType0Font font = PDType0Font.load(doc, new File("C:/Windows/Fonts/cour.ttf"));
+
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page, true, true);
+            contentStream.beginText();
+            contentStream.setFont(font,12);
+            contentStream.appendRawCommands("5.2 Tc\n"); //межбуквенный интервал
+            //Добавляем ID
+            contentStream.moveTextPositionByAmount(139, 708);
+            contentStream.drawString(iccidSt.getText());
+            //Добавляем номер телефона
+            String phone = phoneSt.getText().replaceAll("\\s+", "");
+            String ph1 = phone.substring(0,3); //разделяем номер телефона на 3 части (xxx-xxx-xxxx)
+            String ph2 = phone.substring(3, 6);
+            String ph3 = phone.substring(6, phone.length());
+            contentStream.moveTextPositionByAmount(0,-632);
+            contentStream.drawString(ph1);
+            contentStream.moveTextPositionByAmount(50,0);
+            contentStream.drawString(ph2);
+            contentStream.moveTextPositionByAmount(49,0);
+            contentStream.drawString(ph3);
+            //Добавляем дату рождения
+            String birthD = dataBdayAndLocation.getText().substring(0,10).replaceAll("[\\.]","");
+            String day = birthD.substring(0, 2); //разделяем дату рождения на 3 части (xx-xx-xxxx)
+            String mounth = birthD.substring(2, 4);
+            String year = birthD.substring(4,8);
+            contentStream.moveTextPositionByAmount(-137, 109 );
+            contentStream.drawString(day);
+            contentStream.moveTextPositionByAmount(37, 0 );
+            contentStream.drawString(mounth);
+            contentStream.moveTextPositionByAmount(37, 0 );
+            contentStream.drawString(year);
+            contentStream.appendRawCommands("5.25 Tc\n");
+            //Добавляем ФИО
+            if (fioSt.getText().length()<34){ //проверка на количество символов в строке, если >34, то после 34 перенос на след.строку.
+                contentStream.moveTextPositionByAmount(-48,31 );
+                contentStream.drawString(fioSt.getText());
+                check = true;
+            }
+            else {
+                contentStream.moveTextPositionByAmount(-48,31 );
+                contentStream.drawString(fioSt.getText().substring(0,35));
+                contentStream.moveTextPositionByAmount(0,-15 );
+                contentStream.drawString(fioSt.getText().substring(35,fioSt.getText().length()));
+                check = false;
+            }
+            //Добавляем место рождения
+            String location = dataBdayAndLocation.getText().substring(10,dataBdayAndLocation.getText().length());
+            if (location.length()<21){ //проверка на количество символов в строке, если >21, то после 21 перенос на след.строку.
+                if(check){
+                    contentStream.moveTextPositionByAmount(162,-30 );
+                    contentStream.drawString(location);
+                }
+                else {
+                    contentStream.moveTextPositionByAmount(162,-15 );
+                    contentStream.drawString(location);
+                    check = true;
+                }
+            } else {
+                if(check){
+                    contentStream.moveTextPositionByAmount(162,-30 );
+                    contentStream.drawString(location.substring(0, 22));
+                    contentStream.moveTextPositionByAmount(-187, -15);
+                    contentStream.drawString(location.substring(22,location.length()));
+                    check = false;
+                } else {
+                    contentStream.moveTextPositionByAmount(162,-15 );
+                    contentStream.drawString(location.substring(0, 22));
+                    contentStream.moveTextPositionByAmount(-187,-15 );
+                    contentStream.drawString(location.substring(22,location.length()));
+                    check = false;
+                }
+
+            }
+            //Добавляем серию и номер паспорта
+            if(!passportID.getText().isEmpty()){
+                String passID = passportID.getText().replaceAll("\\s+","");
+                if(check){
+                    contentStream.moveTextPositionByAmount(-188,-31 );
+                    contentStream.drawString(passID.substring(0, 4));
+                    contentStream.moveTextPositionByAmount(88, 0);
+                    contentStream.drawString(passID.substring(4,passID.length()));
+                }
+                else {
+                    contentStream.moveTextPositionByAmount(0,-16 );
+                    contentStream.drawString(passID.substring(0, 4));
+                    contentStream.moveTextPositionByAmount(88, 0);
+                    contentStream.drawString(passID.substring(4,passID.length()));
+                }
+
+            }
+            //Добавляем дату выдачи документа
+            if(!dateOfIssue.getText().isEmpty()){
+                String dateIssue = dateOfIssue.getText().replaceAll("[\\.]","");
+                String dayIssue = dateIssue.substring(0, 2); //разделяем дату рождения на 3 части (xx-xx-xxxx)
+                String mounthIssue = dateIssue.substring(2, 4);
+                String yearIssue = dateIssue.substring(4, 8);
+                contentStream.moveTextPositionByAmount(137, 0 );
+                contentStream.drawString(dayIssue);
+                contentStream.moveTextPositionByAmount(37, 0 );
+                contentStream.drawString(mounthIssue);
+                contentStream.moveTextPositionByAmount(37, 0 );
+                contentStream.drawString(yearIssue);
+            }
+            //Добавляем кем выдан документ
+            if(!issueBy.getText().isEmpty()){
+                if(issueBy.getText().length()<37){
+                    contentStream.moveTextPositionByAmount(-299, -16);
+                    contentStream.drawString(issueBy.getText());
+                    checkLineIssue=false;
+                }
+                else {
+                    contentStream.moveTextPositionByAmount(-299, -16);
+                    contentStream.drawString(issueBy.getText().substring(0,37));
+                    contentStream.moveTextPositionByAmount(0, -16);
+                    contentStream.drawString(issueBy.getText().substring(37,issueBy.getText().length()));
+                    checkLineIssue=true;
+                }
+            }
+            //Добавляем адрес места жительства
+            if(!registration.getText().isEmpty()){
+                if(registration.getText().length()<34){
+                    if(checkLineIssue){
+                        contentStream.moveTextPositionByAmount(37, -15);
+                        contentStream.drawString(registration.getText());
+                    }
+                    else {
+                        contentStream.moveTextPositionByAmount(37, -31);
+                        contentStream.drawString(registration.getText());
+                    }
+                }
+                else {
+                    if(checkLineIssue){
+                        contentStream.moveTextPositionByAmount(37, -15);
+                        contentStream.drawString(registration.getText().substring(0,34));
+                        contentStream.moveTextPositionByAmount(0, -15);
+                        contentStream.drawString(registration.getText().substring(34,registration.getText().length()));
+                    }
+                    else {
+                        contentStream.moveTextPositionByAmount(37, -31);
+                        contentStream.drawString(registration.getText().substring(0,34));
+                        contentStream.moveTextPositionByAmount(0, -15);
+                        contentStream.drawString(registration.getText().substring(34,registration.getText().length()));
+                    }
+                }
+            }
+            contentStream.endText();
+            contentStream.close();
+
+            doc.save(pathToDesk+"\\zayavlenie.pdf");
+
             PrinterJob job = PrinterJob.getPrinterJob();
             job.setPageable(new PDFPageable(doc));
             if (job.printDialog()) {
                 job.print();
             }
+            doc.close();
         }
-        doc.close();
     }
 
     public void AboutShow() throws IOException { //показываем окно "О программе"

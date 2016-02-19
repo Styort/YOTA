@@ -135,13 +135,21 @@
                                 <ColumnConstraints hgrow="SOMETIMES" />
                             </columnConstraints>
                             <rowConstraints>
-                                <RowConstraints maxHeight="25.0" minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                                <RowConstraints maxHeight="25.0" minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                                <RowConstraints maxHeight="25.0" minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                                <RowConstraints maxHeight="25.0" minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                <RowConstraints maxHeight="25" prefHeight="25" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="25" prefHeight="25" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="25" prefHeight="25" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="25" prefHeight="25" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="25" prefHeight="25" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="25" prefHeight="25" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="25" prefHeight="25" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="25" prefHeight="25" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
                             </rowConstraints>
@@ -150,6 +158,10 @@
                                 <Label text="ФИО:" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                                 <Label text="Дата и место рождения" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
                                 <Label text="Номер телефона" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
+                                <Label text="Серия и номер паспорта" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="8" />
+                                <Label text="Дата выдачи" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="10" />
+                                <Label text="Кем выдан" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="12" />
+                                <Label text="Адрес места жительства" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="14" />
                                 <TextField fx:id="iccidSt" GridPane.rowIndex="1">
                                     <GridPane.margin>
                                         <Insets left="100.0" right="100.0" />
@@ -170,7 +182,27 @@
                                         <Insets left="100.0" right="100.0" />
                                     </GridPane.margin>
                                 </TextField>
-                                <Button mnemonicParsing="false" onAction="#PrintStatement" prefWidth="300.0" text="Печать" GridPane.halignment="CENTER" GridPane.rowIndex="8" />
+                                <TextField fx:id="passportID" GridPane.rowIndex="9">
+                                    <GridPane.margin>
+                                        <Insets left="100.0" right="100.0" />
+                                    </GridPane.margin>
+                                </TextField>
+                                <TextField fx:id="dateOfIssue" GridPane.rowIndex="11">
+                                    <GridPane.margin>
+                                        <Insets left="100.0" right="100.0" />
+                                    </GridPane.margin>
+                                </TextField>
+                                <TextField fx:id="issueBy" GridPane.rowIndex="13">
+                                    <GridPane.margin>
+                                        <Insets left="100.0" right="100.0" />
+                                    </GridPane.margin>
+                                </TextField>
+                                <TextField fx:id="registration" GridPane.rowIndex="15">
+                                    <GridPane.margin>
+                                        <Insets left="100.0" right="100.0" />
+                                    </GridPane.margin>
+                                </TextField>
+                                <Button mnemonicParsing="false" onAction="#PrintStatement" prefWidth="300.0" text="Печать" GridPane.halignment="CENTER" GridPane.rowIndex="16" />
                             </children>
                         </GridPane>
                     </content>
