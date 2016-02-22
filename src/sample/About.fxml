@@ -37,8 +37,8 @@
                   <Label text="Версия:" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
                   <Label text="2016" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
                   <Label text=" Cинёв Виктор" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
-                  <Label text=" 2.2-b" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
-                  <Label text="YOTA Памятка 2.2" GridPane.halignment="CENTER" />
+                  <Label text=" 3.0-b" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
+                  <Label text="YOTA Памятка 3.0" GridPane.halignment="CENTER" />
                   <Label text="Автор идеи:" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
                   <Label text=" Александр Кудряшов" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                </children>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
+<?import javafx.collections.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
@@ -17,49 +18,49 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
-           <children>
-               <MenuBar BorderPane.alignment="CENTER">
-                   <menus>
-                       <Menu mnemonicParsing="false" text="Файл">
-                           <items>
-                               <MenuItem mnemonicParsing="false" onAction="#LogInYOTA" text="Войти в портал" />
-                           </items>
-                       </Menu>
-                       <Menu mnemonicParsing="false" text="Редактирование">
-                           <items>
-                               <MenuItem mnemonicParsing="false" onAction="#ClearAll" text="Стереть все" />
-                           </items>
-                       </Menu>
-                       <Menu mnemonicParsing="false" text="Справка">
-                           <items>
-                               <MenuItem mnemonicParsing="false" onAction="#AboutShow" text="О программе" />
-                           </items>
-                       </Menu>
-                   </menus>
-               </MenuBar>
-               <Label text="Ссылка" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-               <TextField fx:id="url" GridPane.rowIndex="2">
-                   <GridPane.margin>
-                       <Insets left="100.0" right="100.0" />
-                   </GridPane.margin>
-               </TextField>
-               <Button mnemonicParsing="false" onAction="#GetData" prefWidth="145.0" text="Считать данные" textAlignment="CENTER" GridPane.rowIndex="3">
-                   <GridPane.margin>
-                       <Insets left="100.0" />
-                   </GridPane.margin>
-            </Button>
-               <Button mnemonicParsing="false" onAction="#ClearAll" prefWidth="145.0" text="Стереть все" textAlignment="CENTER" GridPane.rowIndex="3">
-                   <GridPane.margin>
-                       <Insets left="255" />
-                   </GridPane.margin>
-               </Button>
-           </children>
+            <children>
+                <MenuBar BorderPane.alignment="CENTER">
+                    <menus>
+                        <Menu mnemonicParsing="false" text="Файл">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#LogInYOTA" text="Войти в портал" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Редактирование">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#ClearAll" text="Стереть все" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Справка">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#AboutShow" text="О программе" />
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+                <Label text="Ссылка" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                <TextField fx:id="url" GridPane.rowIndex="2">
+                    <GridPane.margin>
+                        <Insets left="100.0" right="100.0" />
+                    </GridPane.margin>
+                </TextField>
+                <Button mnemonicParsing="false" onAction="#GetData" prefWidth="145.0" text="Считать данные" textAlignment="CENTER" GridPane.rowIndex="3">
+                    <GridPane.margin>
+                        <Insets left="100.0" />
+                    </GridPane.margin>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#ClearAll" prefWidth="145.0" text="Стереть все" textAlignment="CENTER" GridPane.rowIndex="3">
+                    <GridPane.margin>
+                        <Insets left="255" />
+                    </GridPane.margin>
+                </Button>
+            </children>
         </GridPane>
     </top>
     <center>
-        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" fx:id="tabPane">
+        <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <tabs>
-                <Tab text="Памятка" fx:id="memoTab">
+                <Tab fx:id="memoTab" text="Памятка">
                     <content>
                         <GridPane>
                             <columnConstraints>
@@ -128,89 +129,145 @@
                         </GridPane>
                     </content>
                 </Tab>
-                <Tab text="Заявление" fx:id="declarationTab">
+                <Tab fx:id="declarationTab" text="Заявление">
                     <content>
                         <GridPane prefHeight="416.0" prefWidth="500.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" />
                             </columnConstraints>
                             <rowConstraints>
-                                <RowConstraints maxHeight="25" prefHeight="25" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
-                                <RowConstraints maxHeight="25" prefHeight="25" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
-                                <RowConstraints maxHeight="25" prefHeight="25" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
-                                <RowConstraints maxHeight="25" prefHeight="25" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
-                                <RowConstraints maxHeight="25" prefHeight="25" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
-                                <RowConstraints maxHeight="25" prefHeight="25" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
-                                <RowConstraints maxHeight="25" prefHeight="25" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
-                                <RowConstraints maxHeight="25" prefHeight="25" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
                             </rowConstraints>
                             <children>
-                                <Label text="ICCID:" textAlignment="CENTER" GridPane.halignment="CENTER" />
-                                <Label text="ФИО:" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
-                                <Label text="Дата и место рождения" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
-                                <Label text="Номер телефона" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
-                                <Label text="Серия и номер паспорта" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="8" />
-                                <Label text="Дата выдачи" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="10" />
-                                <Label text="Кем выдан" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="12" />
-                                <Label text="Адрес места жительства" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="14" />
-                                <TextField fx:id="iccidSt" GridPane.rowIndex="1">
+                                <Label alignment="CENTER" text="ICCID:" textAlignment="CENTER" GridPane.halignment="LEFT">
                                     <GridPane.margin>
-                                        <Insets left="100.0" right="100.0" />
+                                        <Insets left="10.0" />
+                                    </GridPane.margin></Label>
+                                <Label text="ФИО:" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                                    <GridPane.margin>
+                                        <Insets left="10.0" />
+                                    </GridPane.margin></Label>
+                                <Label text="Дата и место рождения:" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="2">
+                                    <GridPane.margin>
+                                        <Insets left="10.0" />
+                                    </GridPane.margin></Label>
+                                <Label text="Номер телефона:" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="3">
+                                    <GridPane.margin>
+                                        <Insets left="10.0" />
+                                    </GridPane.margin></Label>
+                                <Label text="Серия и номер паспорта:" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="4">
+                                    <GridPane.margin>
+                                        <Insets left="10.0" />
+                                    </GridPane.margin></Label>
+                                <Label text="Дата выдачи:" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="5">
+                                    <GridPane.margin>
+                                        <Insets left="10.0" />
+                                    </GridPane.margin></Label>
+                                <Label text="Кем выдан:" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="6">
+                                    <GridPane.margin>
+                                        <Insets left="10.0" />
+                                    </GridPane.margin></Label>
+                                <Label text="Адрес места жительства:" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="7">
+                                    <GridPane.margin>
+                                        <Insets left="10.0" />
+                                    </GridPane.margin></Label>
+                                <Label text="Дата доставки(для MNP):" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="8">
+                                    <GridPane.margin>
+                                        <Insets left="10.0" />
+                                    </GridPane.margin></Label>
+                                <TextField fx:id="iccidSt">
+                                    <GridPane.margin>
+                                        <Insets left="150.0" right="10.0" />
                                     </GridPane.margin>
                                 </TextField>
-                                <TextField fx:id="fioSt" GridPane.rowIndex="3">
+                                <TextField fx:id="fioSt" GridPane.rowIndex="1">
                                     <GridPane.margin>
-                                        <Insets left="100.0" right="100.0" />
+                                        <Insets left="150.0" right="10.0" />
                                     </GridPane.margin>
                                 </TextField>
-                                <TextField fx:id="dataBdayAndLocation" GridPane.rowIndex="5">
+                                <TextField fx:id="dataBdayAndLocation" GridPane.rowIndex="2">
                                     <GridPane.margin>
-                                        <Insets left="100.0" right="100.0" />
+                                        <Insets left="150.0" right="10.0" />
                                     </GridPane.margin>
                                 </TextField>
-                                <TextField fx:id="phoneSt" GridPane.rowIndex="7">
+                                <TextField fx:id="phoneSt" GridPane.rowIndex="3">
                                     <GridPane.margin>
-                                        <Insets left="100.0" right="100.0" />
+                                        <Insets left="150.0" right="10.0" />
                                     </GridPane.margin>
                                 </TextField>
-                                <TextField fx:id="passportID" GridPane.rowIndex="9">
+                                <TextField fx:id="passportID" GridPane.rowIndex="4">
                                     <GridPane.margin>
-                                        <Insets left="100.0" right="100.0" />
+                                        <Insets left="150.0" right="10.0" />
                                     </GridPane.margin>
                                 </TextField>
-                                <TextField fx:id="dateOfIssue" GridPane.rowIndex="11">
+                                <TextField fx:id="dateOfIssue" GridPane.rowIndex="5">
                                     <GridPane.margin>
-                                        <Insets left="100.0" right="100.0" />
+                                        <Insets left="150.0" right="10.0" />
                                     </GridPane.margin>
                                 </TextField>
-                                <TextField fx:id="issueBy" GridPane.rowIndex="13">
+                                <TextField fx:id="issueBy" GridPane.rowIndex="6">
                                     <GridPane.margin>
-                                        <Insets left="100.0" right="100.0" />
+                                        <Insets left="150.0" right="10.0" />
                                     </GridPane.margin>
                                 </TextField>
-                                <TextField fx:id="registration" GridPane.rowIndex="15">
+                                <TextField fx:id="registration" GridPane.rowIndex="7">
                                     <GridPane.margin>
-                                        <Insets left="100.0" right="100.0" />
+                                        <Insets left="150.0" right="10.0" />
                                     </GridPane.margin>
                                 </TextField>
-                                <Button mnemonicParsing="false" onAction="#PrintStatement" prefWidth="300.0" text="Печать" GridPane.halignment="CENTER" GridPane.rowIndex="16" />
+                                <TextField fx:id="delivData" GridPane.rowIndex="8">
+                                    <GridPane.margin>
+                                        <Insets left="150.0" right="10.0" />
+                                    </GridPane.margin>
+                                </TextField>
+                                <Button mnemonicParsing="false" onAction="#PrintStatement" prefWidth="300.0" text="Печать заявления" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
+                                <ComboBox fx:id="docTypeCB" promptText="Выберите тип документа(для MNP)" value="Выберите тип документа(для MNP)" prefWidth="300.0" GridPane.halignment="CENTER" GridPane.rowIndex="10">
+                                    <items>
+                                        <FXCollections fx:factory="observableArrayList">
+                                            <String fx:value="Паспорт гражданина РФ" />
+                                            <String fx:value="Паспорт иностранного гражданина" />
+                                            <String fx:value="Военный билет" />
+                                            <String fx:value="Вид на жительство" />
+                                            <String fx:value="Паспорт гражданина СССР" />
+                                            <String fx:value="Разрешение на временное проживание" />
+                                            <String fx:value="Удостоверение беженца" />
+                                        </FXCollections>
+                                    </items>
+                                </ComboBox>
+                                <Button mnemonicParsing="false" onAction="#PrintStatement" prefWidth="300.0" text="Печать MNP" GridPane.halignment="CENTER" GridPane.rowIndex="12" />
+                                <ComboBox fx:id="operatorCB" prefWidth="300.0" promptText="Выберите оператора(для MNP)" value="Выберите оператора(для MNP)" GridPane.halignment="CENTER" GridPane.rowIndex="11">
+                                    <items>
+                                        <FXCollections fx:factory="observableArrayList">
+                                            <String fx:value="ВымпелКом ОАО" />
+                                            <String fx:value="МГТС ОАО, Мобильные ТелеСистемы ОАО" />
+                                            <String fx:value="МегаФон ОАО" />
+                                            <String fx:value="Группа компаний TELE2" />
+                                        </FXCollections>
+                                    </items>
+                                </ComboBox>
                             </children>
+                            <padding>
+                                <Insets top="5.0" />
+                            </padding>
                         </GridPane>
                     </content>
                 </Tab>
             </tabs>
-         <BorderPane.margin>
-            <Insets bottom="5.0" top="5.0" />
-         </BorderPane.margin>
+            <BorderPane.margin>
+                <Insets bottom="5.0" top="5.0" />
+            </BorderPane.margin>
         </TabPane>
     </center>
 </BorderPane>
