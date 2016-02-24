@@ -149,6 +149,7 @@
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
                                 <RowConstraints maxHeight="40.0" prefHeight="40.0" />
+                                <RowConstraints maxHeight="40.0" prefHeight="40.0" />
                             </rowConstraints>
                             <children>
                                 <Label alignment="CENTER" text="ICCID:" textAlignment="CENTER" GridPane.halignment="LEFT">
@@ -183,7 +184,11 @@
                                     <GridPane.margin>
                                         <Insets left="10.0" />
                                     </GridPane.margin></Label>
-                                <Label text="Дата доставки(для MNP):" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="8">
+                                <Label text="Дата доставки:" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="8">
+                                    <GridPane.margin>
+                                        <Insets left="10.0" />
+                                    </GridPane.margin></Label>
+                                <Label text="Переносимый номер:" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="9">
                                     <GridPane.margin>
                                         <Insets left="10.0" />
                                     </GridPane.margin></Label>
@@ -232,8 +237,13 @@
                                         <Insets left="150.0" right="10.0" />
                                     </GridPane.margin>
                                 </TextField>
-                                <Button mnemonicParsing="false" onAction="#PrintStatement" prefWidth="300.0" text="Печать заявления" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
-                                <ComboBox fx:id="docTypeCB" promptText="Выберите тип документа(для MNP)" value="Выберите тип документа(для MNP)" prefWidth="300.0" GridPane.halignment="CENTER" GridPane.rowIndex="10">
+                                <TextField fx:id="transferNumber" GridPane.rowIndex="9">
+                                    <GridPane.margin>
+                                        <Insets left="150.0" right="10.0" />
+                                    </GridPane.margin>
+                                </TextField>
+                                <Button mnemonicParsing="false" onAction="#PrintStatement" prefWidth="300.0" text="Печать заявления" GridPane.halignment="CENTER" GridPane.rowIndex="10" />
+                                <ComboBox fx:id="docTypeCB" promptText="Выберите тип документа(для MNP)" value="Выберите тип документа(для MNP)" prefWidth="300.0" GridPane.halignment="CENTER" GridPane.rowIndex="11">
                                     <items>
                                         <FXCollections fx:factory="observableArrayList">
                                             <String fx:value="Паспорт гражданина РФ" />
@@ -246,8 +256,8 @@
                                         </FXCollections>
                                     </items>
                                 </ComboBox>
-                                <Button mnemonicParsing="false" onAction="#PrintStatement" prefWidth="300.0" text="Печать MNP" GridPane.halignment="CENTER" GridPane.rowIndex="12" />
-                                <ComboBox fx:id="operatorCB" prefWidth="300.0" promptText="Выберите оператора(для MNP)" value="Выберите оператора(для MNP)" GridPane.halignment="CENTER" GridPane.rowIndex="11">
+                                <Button mnemonicParsing="false" onAction="#PrintStatement" prefWidth="300.0" text="Печать MNP" GridPane.halignment="CENTER" GridPane.rowIndex="13" />
+                                <ComboBox fx:id="operatorCB" prefWidth="300.0" promptText="Выберите оператора(для MNP)" value="Выберите оператора(для MNP)" GridPane.halignment="CENTER" GridPane.rowIndex="12">
                                     <items>
                                         <FXCollections fx:factory="observableArrayList">
                                             <String fx:value="ВымпелКом ОАО" />

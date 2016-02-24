@@ -4,7 +4,7 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
 
-import com.gargoylesoftware.htmlunit.javascript.host.html.HTMLDivElement;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,18 +23,14 @@ import org.apache.pdfbox.printing.PDFPageable;
 import java.awt.*;
 import java.awt.print.*;
 import java.io.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Locale;
 
 public class ControllerMemo {
     @FXML
     TextField url, iccidMemo,iccidSt, address, data, fioMemo, fioSt, phoneMemo, phoneSt
-            , comment, dataBdayAndLocation, passportID, dateOfIssue,issueBy, registration,delivData;
+            , comment, dataBdayAndLocation, passportID, dateOfIssue,issueBy, registration,delivData,transferNumber;
     @FXML
     CheckBox fillCommentCheckBox;
     @FXML
@@ -105,6 +101,7 @@ public class ControllerMemo {
                     iccidMemo.appendText(Iccid.getDefaultValue());
                     iccidSt.appendText(Iccid.getDefaultValue());
                     data.appendText(Data.getDefaultValue() + " c " + TimeBegin.getDefaultValue() + " по " + TimeEnd.getDefaultValue());
+                    delivData.appendText(Data.getDefaultValue());
                     fioMemo.appendText(ClientName.getDefaultValue());
                     fioSt.appendText(ClientName.getDefaultValue());
                     String dl = DateBdayAndLocation.getDefaultValue();
@@ -172,6 +169,10 @@ public class ControllerMemo {
         dateOfIssue.clear();
         issueBy.clear();
         registration.clear();
+        delivData.clear();
+        transferNumber.clear();
+        operatorCB.setPromptText("Выберите оператора(для MNP)");
+        docTypeCB.setPromptText("Выберите тип документа(для MNP)");
         clearAllOrNotAll = false;
     }
 
@@ -321,7 +322,7 @@ public class ControllerMemo {
         if(actionEvent.getTarget().toString().contains("Печать MNP")){
             if (iccidSt.getText().isEmpty() || fioSt.getText().isEmpty() || dataBdayAndLocation.getText().isEmpty() || phoneSt.getText().isEmpty()
                     || passportID.getText().isEmpty() ||dateOfIssue.getText().isEmpty() || issueBy.getText().isEmpty()
-                    || registration.getText().isEmpty()|| delivData.getText().isEmpty())
+                    || registration.getText().isEmpty()|| delivData.getText().isEmpty() || transferNumber.getText().isEmpty())
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Ошибка!");
@@ -406,7 +407,7 @@ public class ControllerMemo {
                     contentStream.drawString(phoneSt.getText());
                     //Добавляем переносимый номер тел.
                     contentStream.moveTextPositionByAmount(153, -34);
-                    contentStream.drawString(phoneSt.getText());
+                    contentStream.drawString(transferNumber.getText());
                     //Добавляем id сим-карты
                     contentStream.moveTextPositionByAmount(-20, -37);
                     contentStream.drawString(iccidSt.getText());
@@ -462,13 +463,14 @@ public class ControllerMemo {
         }
         if(actionEvent.getTarget().toString().contains("Печать заявления"))
         {
-            if (iccidSt.getText().isEmpty() || fioSt.getText().isEmpty() || dataBdayAndLocation.getText().isEmpty() || phoneSt.getText().isEmpty())
+            if (iccidSt.getText().isEmpty() || fioSt.getText().isEmpty() || dataBdayAndLocation.getText().isEmpty()
+                    || phoneSt.getText().isEmpty()||delivData.getText().isEmpty())
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Ошибка!");
                 alert.setHeaderText("Не все данные получены.");
                 alert.setContentText("                                             Поля : " +
-                        "\n'ICCID', 'ФИО', 'Дата и место рождения', 'Номер телефона'" +
+                        "\n'ICCID', 'ФИО', 'Дата и место рождения', 'Номер телефона', 'Дата доставки'" +
                         " \n                         Обязательны к заполнению!");
                 alert.showAndWait();
             }
@@ -550,21 +552,33 @@ public class ControllerMemo {
                         }
 
                     }
+                    //Добавляем дату доставки
+                    String delivDate = delivData.getText().substring(0, 10).replaceAll("[\\.]", "");
+                    String dayDeliv = delivDate.substring(0, 2); //разделяем дату доставку на 3 части (xx-xx-xxxx)
+                    String mounthDeliv = delivDate.substring(2, 4);
+                    String yearDeliv = delivDate.substring(4, 8);
+                    if (check) {
+                        contentStream.moveTextPositionByAmount(-200, -126);
+                        contentStream.drawString(dayDeliv);
+                        contentStream.moveTextPositionByAmount(37, 0);
+                        contentStream.drawString(mounthDeliv);
+                        contentStream.moveTextPositionByAmount(37, 0);
+                        contentStream.drawString(yearDeliv);
+                    } else {
+                        contentStream.moveTextPositionByAmount(0, -109);
+                        contentStream.drawString(dayDeliv);
+                        contentStream.moveTextPositionByAmount(37, 0);
+                        contentStream.drawString(mounthDeliv);
+                        contentStream.moveTextPositionByAmount(37, 0);
+                        contentStream.drawString(yearDeliv);
+                    }
                     //Добавляем серию и номер паспорта
                     if (!passportID.getText().isEmpty()) {
                         String passID = passportID.getText().replaceAll("\\s+", "");
-                        if (check) {
-                            contentStream.moveTextPositionByAmount(-201, -31);
+                            contentStream.moveTextPositionByAmount(-75, 94);
                             contentStream.drawString(passID.substring(0, 4));
                             contentStream.moveTextPositionByAmount(88, 0);
                             contentStream.drawString(passID.substring(4, passID.length()));
-                        } else {
-                            contentStream.moveTextPositionByAmount(0, -16);
-                            contentStream.drawString(passID.substring(0, 4));
-                            contentStream.moveTextPositionByAmount(88, 0);
-                            contentStream.drawString(passID.substring(4, passID.length()));
-                        }
-
                     }
                     //Добавляем дату выдачи документа
                     if (!dateOfIssue.getText().isEmpty()) {
@@ -617,26 +631,7 @@ public class ControllerMemo {
                             }
                         }
                     }
-                    String delivDate = data.getText().substring(0, 10).replaceAll("[\\.]", "");
-                    String dayDeliv = delivDate.substring(0, 2); //разделяем дату доставку на 3 части (xx-xx-xxxx)
-                    String mounthDeliv = delivDate.substring(2, 4);
-                    String yearDeliv = delivDate.substring(4, 8);
-                    if(registration.getText().length()<34){
-                        contentStream.moveTextPositionByAmount(-36, -49);
-                        contentStream.drawString(dayDeliv);
-                        contentStream.moveTextPositionByAmount(37, 0);
-                        contentStream.drawString(mounthDeliv);
-                        contentStream.moveTextPositionByAmount(37, 0);
-                        contentStream.drawString(yearDeliv);
-                    }
-                    else{
-                        contentStream.moveTextPositionByAmount(-36, -33);
-                        contentStream.drawString(dayDeliv);
-                        contentStream.moveTextPositionByAmount(37, 0);
-                        contentStream.drawString(mounthDeliv);
-                        contentStream.moveTextPositionByAmount(37, 0);
-                        contentStream.drawString(yearDeliv);
-                    }
+
 
                     contentStream.endText();
                     contentStream.close();
@@ -675,5 +670,9 @@ public class ControllerMemo {
         stage.setResizable(false);
         stage.setScene(new Scene(root, 450, 200));
         stage.show();
+        stage.setOnCloseRequest(t -> {
+            Platform.exit();
+            System.exit(0);
+        });
     }
 }
