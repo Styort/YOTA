@@ -280,4 +280,11 @@
             </BorderPane.margin>
         </TabPane>
     </center>
+    <bottom>
+        <Button maxWidth="300.0" onAction="#ExcelSave" minWidth="300.0" mnemonicParsing="false" prefWidth="300.0" text="Сохранить в Excel" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets bottom="5.0" />
+            </BorderPane.margin>
+        </Button>
+    </bottom>
 </BorderPane>

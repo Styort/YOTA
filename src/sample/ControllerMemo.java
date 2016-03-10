@@ -1,7 +1,5 @@
 package sample;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
 
 import javafx.application.Platform;
@@ -19,8 +17,13 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.printing.PDFPageable;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
 
 import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.print.*;
 import java.io.*;
 import java.time.LocalDate;
@@ -28,47 +31,25 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class ControllerMemo {
+    Authorization authorization = new Authorization();
+
     @FXML
-    TextField url, iccidMemo,iccidSt, address, data, fioMemo, fioSt, phoneMemo, phoneSt
-            , comment, dataBdayAndLocation, passportID, dateOfIssue,issueBy, registration,delivData,transferNumber;
+    TextField url, iccidMemo, iccidSt, address, data, fioMemo, fioSt, phoneMemo, phoneSt, comment, dataBdayAndLocation, passportID, dateOfIssue, issueBy, registration, delivData, transferNumber;
     @FXML
     CheckBox fillCommentCheckBox;
     @FXML
-    Tab memoTab,declarationTab;
+    Tab memoTab, declarationTab;
     @FXML
     TabPane tabPane;
     @FXML
-    ComboBox docTypeCB,operatorCB;
-    WebClient webClient = new WebClient(BrowserVersion.CHROME);
-    HtmlTextInput Iccid, Address, Data, TimeBegin, TimeEnd, ClientName, ClientPhoneNumber
-            ,DateBdayAndLocation,PassportID,DateOfIssueAndIssueBy,Registration;
+    ComboBox docTypeCB, operatorCB;
+    HtmlTextInput Iccid, Address, Data, TimeBegin, TimeEnd, ClientName, ClientPhoneNumber, DateBdayAndLocation, PassportID, DateOfIssueAndIssueBy, Registration;
     HtmlTextArea Comment;
     String defaultURL = "https://partner.yota.ru/rd/vox/order/edit/";
     String pathToDesk = System.getProperty("user.home") + "/Desktop";
-    Thread timeredLogin;
-    boolean info = true;
     boolean check = false;
     boolean checkLineIssue = false;
     boolean clearAllOrNotAll = false;
-    boolean loopLogin = false;
-
-    public void loopAuth() { //Авторизация каждые 15мин.
-        timeredLogin = new Thread() {
-            @Override
-            public void run() {
-                while(true) {
-                    try {
-                        Thread.sleep(1000*60*15);
-                        info=false;
-                        LogInYOTA();
-                    } catch (InterruptedException | IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        timeredLogin.start();
-    }
 
     public void GetData() throws IOException { //получаем данные с портала
         clearAllOrNotAll = true;
@@ -80,12 +61,9 @@ public class ControllerMemo {
                 alert.setHeaderText("Недостаточно данных");
                 alert.setContentText("Вставьте ссылку!");
                 alert.showAndWait();
-            }
-            else
-            {
-                if (url.getText().contains(defaultURL))
-                {
-                    HtmlPage page2 = webClient.getPage(url.getText());
+            } else {
+                if (url.getText().contains(defaultURL)) {
+                    HtmlPage page2 = authorization.webClient.getPage(url.getText());
                     Iccid = page2.getFirstByXPath("//input[@id='order_sim_cards_0_iccid']");
                     Data = page2.getFirstByXPath("//input[@name='order[expected_delivery_date]']");
                     TimeBegin = page2.getFirstByXPath("//input[@name='order[expected_delivery_time_begin]']");
@@ -107,26 +85,24 @@ public class ControllerMemo {
                     String dl = DateBdayAndLocation.getDefaultValue();
                     String data = dl.substring(0, 10);
                     String location = dl.substring(11, dl.length());
-                    dataBdayAndLocation.appendText(data+" "+location);
+                    dataBdayAndLocation.appendText(data + " " + location);
                     phoneMemo.appendText(ClientPhoneNumber.getDefaultValue());
-                    String ph = ClientPhoneNumber.getDefaultValue().replaceAll("[\\+\\(\\)]",""); //убираем из номера телефона символы '+','(',')'
-                    phoneSt.appendText(ph.substring(1,ph.length())); //добавляем в текстбокс номер телефона без 7-ки.
+                    String ph = ClientPhoneNumber.getDefaultValue().replaceAll("[\\+\\(\\)]", ""); //убираем из номера телефона символы '+','(',')'
+                    phoneSt.appendText(ph.substring(1, ph.length())); //добавляем в текстбокс номер телефона без 7-ки.
                     address.appendText(Address.getDefaultValue());
                     comment.appendText(Comment.getDefaultValue());
-                    if(!PassportID.getDefaultValue().isEmpty()){
+                    if (!PassportID.getDefaultValue().isEmpty()) {
                         passportID.appendText(PassportID.getDefaultValue());
                     }
                     String passDateAndIssueBy = DateOfIssueAndIssueBy.getDefaultValue();
-                    if(!passDateAndIssueBy.isEmpty()){
-                        dateOfIssue.appendText(passDateAndIssueBy.substring(0,10));
-                        issueBy.appendText(passDateAndIssueBy.substring(11,passDateAndIssueBy.length()));
+                    if (!passDateAndIssueBy.isEmpty()) {
+                        dateOfIssue.appendText(passDateAndIssueBy.substring(0, 10));
+                        issueBy.appendText(passDateAndIssueBy.substring(11, passDateAndIssueBy.length()));
                     }
-                    if(!Registration.getDefaultValue().isEmpty()){
+                    if (!Registration.getDefaultValue().isEmpty()) {
                         registration.appendText(Registration.getDefaultValue());
                     }
-                }
-                else
-                {
+                } else {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Ошибка!");
                     alert.setHeaderText("Неверный формат ссылки.");
@@ -176,59 +152,9 @@ public class ControllerMemo {
         clearAllOrNotAll = false;
     }
 
-    public void WebBrowserSettings() { //настраиваем клиент
-        webClient.getOptions().setPrintContentOnFailingStatusCode(false);
-        webClient.getOptions().setCssEnabled(false);
-        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-        webClient.getOptions().setThrowExceptionOnScriptError(false);
-        webClient.getOptions().setJavaScriptEnabled(false);
-    }
 
-    public void LogInYOTA() throws IOException, InterruptedException { //авторизируемся в портале
-        WebBrowserSettings();
-        try {
-            HtmlPage page1 = webClient.getPage("https://partner.yota.ru/rd/login");
-            HtmlForm form = page1.getFirstByXPath("//form[@action='/rd/login_check']");
-
-            //Заполняем форму
-            HtmlTextInput login = form.getInputByName("_username");
-            HtmlPasswordInput password = form.getInputByName("_password");
-            login.setValueAttribute("login");
-            password.setValueAttribute("password");
-            HtmlSubmitInput button = page1.getFirstByXPath("//input[@id='send_id' and @type='submit']");
-            button.click();
-
-
-            page1 = webClient.getPage("https://partner.yota.ru/rd/vox/order/search");
-            //Проверяем прошла ли авторизация.
-            if (page1.getUrl().toString().contains("https://partner.yota.ru/rd/vox/order/search")){
-                if (info) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Информация");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Авторизация прошла успешно!");
-                    alert.showAndWait();
-                }
-            }
-            else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Ошибка");
-                alert.setHeaderText(null);
-                alert.setContentText("Произошла ошибка при авторизации!");
-                alert.showAndWait();
-            }
-
-        } catch (IOException ex) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка!");
-            alert.setHeaderText("Проверьте интернет соединение");
-            alert.setContentText("Похоже у вас оборвалось соединение с интернетом...");
-            alert.showAndWait();
-        }
-        if(!loopLogin){
-            loopAuth(); //Запуск авторизации каждые 15 мин.
-            loopLogin=true;
-        }
+    public void LogInYOTA() { //авторизируемся в портале
+        authorization.LoginInWebsite();
     }
 
     public void PrintMemo() { //выводим на печать памятку
@@ -306,7 +232,7 @@ public class ControllerMemo {
             alert.setContentText("Заполните все поля!");
             alert.showAndWait();
         } else {
-            if (pjob.printDialog()){
+            if (pjob.printDialog()) {
                 try {
                     pjob.print();
                 } catch (PrinterException pe) {
@@ -316,22 +242,19 @@ public class ControllerMemo {
         }
     }
 
-
     public void PrintStatement(ActionEvent actionEvent) throws IOException, PrinterException { //выводим на печать заявление
         PDDocument doc;
-        if(actionEvent.getTarget().toString().contains("Печать MNP")){
+        if (actionEvent.getTarget().toString().contains("Печать MNP")) {
             if (iccidSt.getText().isEmpty() || fioSt.getText().isEmpty() || dataBdayAndLocation.getText().isEmpty() || phoneSt.getText().isEmpty()
-                    || passportID.getText().isEmpty() ||dateOfIssue.getText().isEmpty() || issueBy.getText().isEmpty()
-                    || registration.getText().isEmpty()|| delivData.getText().isEmpty() || transferNumber.getText().isEmpty())
-            {
+                    || passportID.getText().isEmpty() || dateOfIssue.getText().isEmpty() || issueBy.getText().isEmpty()
+                    || registration.getText().isEmpty() || delivData.getText().isEmpty() || transferNumber.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Ошибка!");
                 alert.setHeaderText("Не все данные получены.");
                 alert.setContentText("Все данные обязательны к заполнению!");
                 alert.showAndWait();
-            }
-            else {
-                try{
+            } else {
+                try {
                     doc = PDDocument.load(new File(pathToDesk + "\\mnp_contract.pdf"));
                     PDDocumentCatalog cat = doc.getDocumentCatalog();
                     PDPage page = cat.getPages().get(0);
@@ -366,36 +289,33 @@ public class ControllerMemo {
                     contentStream.drawString(docTypeCB.getValue().toString());
                     //Добавляем серию и номер документа
                     String passID = passportID.getText().replaceAll("\\s+", "");
-                    if(docTypeCB.getValue().equals("Паспорт гражданина РФ")){
+                    if (docTypeCB.getValue().equals("Паспорт гражданина РФ")) {
 
                         contentStream.moveTextPositionByAmount(210, 0);
                         contentStream.drawString(passID.substring(0, 4));
-                        contentStream.moveTextPositionByAmount(90,0);
+                        contentStream.moveTextPositionByAmount(90, 0);
                         contentStream.drawString(passID.substring(4, passID.length()));
-                    }
-                    else {
+                    } else {
                         contentStream.moveTextPositionByAmount(210, 0);
                         contentStream.drawString(passID.substring(0, 2));
-                        contentStream.moveTextPositionByAmount(90,0);
+                        contentStream.moveTextPositionByAmount(90, 0);
                         contentStream.drawString(passID.substring(2, passID.length()));
                     }
                     //Добавляем кем выдан документ.
-                    if(issueBy.getText().length()<75){
+                    if (issueBy.getText().length() < 75) {
                         contentStream.moveTextPositionByAmount(-295, -22);
                         contentStream.drawString(issueBy.getText());
-                    }
-                    else {
+                    } else {
                         contentStream.moveTextPositionByAmount(-295, -22);
-                        contentStream.drawString(issueBy.getText().substring(0,74));
+                        contentStream.drawString(issueBy.getText().substring(0, 74));
                         contentStream.moveTextPositionByAmount(-59, -23);
-                        contentStream.drawString(issueBy.getText().substring(74,issueBy.getText().length()));
+                        contentStream.drawString(issueBy.getText().substring(74, issueBy.getText().length()));
                     }
                     //Добавляем дату выдачи документа
-                    if(issueBy.getText().length()<75){
+                    if (issueBy.getText().length() < 75) {
                         contentStream.moveTextPositionByAmount(350, -23);
                         contentStream.drawString(dateOfIssue.getText());
-                    }
-                    else {
+                    } else {
                         contentStream.moveTextPositionByAmount(409, 0);
                         contentStream.drawString(dateOfIssue.getText());
                     }
@@ -413,28 +333,27 @@ public class ControllerMemo {
                     contentStream.drawString(iccidSt.getText());
                     //Добавляем дату переноса номера
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.ENGLISH);
-                    String dateTr = delivData.getText().substring(0,10);
-                    LocalDate ld = LocalDate.parse(dateTr,formatter);
+                    String dateTr = delivData.getText().substring(0, 10);
+                    LocalDate ld = LocalDate.parse(dateTr, formatter);
 
                     dateTr = ld.plusDays(12).toString().replaceAll("-", ".");
                     contentStream.moveTextPositionByAmount(-20, -37);
-                    contentStream.drawString(dateTr.substring(8,10)+dateTr.substring(4,7)+"."+dateTr.substring(0,4)+":00");
+                    contentStream.drawString(dateTr.substring(8, 10) + dateTr.substring(4, 7) + "." + dateTr.substring(0, 4) + ":00");
                     //Добавляем оператора
                     contentStream.moveTextPositionByAmount(-125, -113);
                     contentStream.drawString(operatorCB.getValue().toString());
 
                     contentStream.endText();
                     contentStream.close();
-                    if(docTypeCB.getValue().toString().equals("Выберите тип документа(для MNP)")
-                            ||operatorCB.getValue().toString().equals("Выберите оператора(для MNP)")){
+                    if (docTypeCB.getValue().toString().equals("Выберите тип документа(для MNP)")
+                            || operatorCB.getValue().toString().equals("Выберите оператора(для MNP)")) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Ошибка!");
                         alert.setHeaderText("Недостаточно данных");
                         alert.setContentText("Выберите тип документа и оператора!");
                         alert.showAndWait();
-                    }
-                    else {
-                        try{
+                    } else {
+                        try {
                             doc.save(pathToDesk + "\\mnp_contractZap.pdf");
                             PrinterJob job = PrinterJob.getPrinterJob();
                             job.setPageable(new PDFPageable(doc));
@@ -442,8 +361,7 @@ public class ControllerMemo {
                                 job.print();
                             }
                             doc.close();
-                        }
-                        catch (FileNotFoundException ex){
+                        } catch (FileNotFoundException ex) {
                             Alert alert = new Alert(Alert.AlertType.ERROR);
                             alert.setTitle("Ошибка");
                             alert.setHeaderText(null);
@@ -451,8 +369,7 @@ public class ControllerMemo {
                             alert.showAndWait();
                         }
                     }
-                }
-                catch (FileNotFoundException ex){
+                } catch (FileNotFoundException ex) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Ошибка");
                     alert.setHeaderText(null);
@@ -461,11 +378,9 @@ public class ControllerMemo {
                 }
             }
         }
-        if(actionEvent.getTarget().toString().contains("Печать заявления"))
-        {
+        if (actionEvent.getTarget().toString().contains("Печать заявления")) {
             if (iccidSt.getText().isEmpty() || fioSt.getText().isEmpty() || dataBdayAndLocation.getText().isEmpty()
-                    || phoneSt.getText().isEmpty()||delivData.getText().isEmpty())
-            {
+                    || phoneSt.getText().isEmpty() || delivData.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Ошибка!");
                 alert.setHeaderText("Не все данные получены.");
@@ -473,8 +388,7 @@ public class ControllerMemo {
                         "\n'ICCID', 'ФИО', 'Дата и место рождения', 'Номер телефона', 'Дата доставки'" +
                         " \n                         Обязательны к заполнению!");
                 alert.showAndWait();
-            }
-            else {
+            } else {
                 try {
                     doc = PDDocument.load(new File(pathToDesk + "\\DocZ.pdf"));
 
@@ -482,6 +396,7 @@ public class ControllerMemo {
                     PDPage page = cat.getPages().get(0);
                     doc.addPage(page);
                     PDType0Font font = PDType0Font.load(doc, new File("C:/Windows/Fonts/cour.ttf"));
+                    font.getFontDescriptor().setForceBold(true);
 
                     PDPageContentStream contentStream = new PDPageContentStream(doc, page, true, true);
                     contentStream.beginText();
@@ -575,10 +490,10 @@ public class ControllerMemo {
                     //Добавляем серию и номер паспорта
                     if (!passportID.getText().isEmpty()) {
                         String passID = passportID.getText().replaceAll("\\s+", "");
-                            contentStream.moveTextPositionByAmount(-75, 94);
-                            contentStream.drawString(passID.substring(0, 4));
-                            contentStream.moveTextPositionByAmount(88, 0);
-                            contentStream.drawString(passID.substring(4, passID.length()));
+                        contentStream.moveTextPositionByAmount(-75, 94);
+                        contentStream.drawString(passID.substring(0, 4));
+                        contentStream.moveTextPositionByAmount(88, 0);
+                        contentStream.drawString(passID.substring(4, passID.length()));
                     }
                     //Добавляем дату выдачи документа
                     if (!dateOfIssue.getText().isEmpty()) {
@@ -636,7 +551,7 @@ public class ControllerMemo {
                     contentStream.endText();
                     contentStream.close();
 
-                    try{
+                    try {
                         doc.save(pathToDesk + "\\zayavlenie.pdf");
                         PrinterJob job = PrinterJob.getPrinterJob();
                         job.setPageable(new PDFPageable(doc));
@@ -644,8 +559,7 @@ public class ControllerMemo {
                             job.print();
                         }
                         doc.close();
-                    }
-                    catch (FileNotFoundException ex){
+                    } catch (FileNotFoundException ex) {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setTitle("Ошибка");
                         alert.setHeaderText(null);
@@ -661,6 +575,46 @@ public class ControllerMemo {
                 }
             }
         }
+    }
+
+    public void ExcelSave() throws IOException { //Сохранение ПД в Excel
+        FileInputStream inputStream = new FileInputStream(pathToDesk + "\\contactYota.xls");
+        Workbook wb = new HSSFWorkbook(inputStream); //Создаем книгу
+        Sheet sheet = wb.getSheet("ПД"); //создаем лист
+
+        Row row = sheet.createRow(sheet.getLastRowNum()+1); //находим последний заполненный ряд и записываем данные на следующий.
+
+        //Указываем какие ячейки в ряду row заполнять данными.
+        Cell iccidCell = row.createCell(0);
+        Cell deliveryDataCell = row.createCell(1);
+        Cell fioCell = row.createCell(2);
+        Cell dataBdayBornPlaceCell = row.createCell(3);
+        Cell passportidCell = row.createCell(4);
+        Cell dateOfIssueCell = row.createCell(5);
+        Cell issueByCell = row.createCell(6);
+        Cell registrationCell = row.createCell(7);
+        Cell phoneCell = row.createCell(8);
+        Cell deliveryPlaceCell = row.createCell(9);
+        Cell commentCell = row.createCell(10);
+        inputStream.close();
+
+        //Заполняем данными указанные ячейки
+        iccidCell.setCellValue(iccidSt.getText());
+        deliveryDataCell.setCellValue(data.getText());
+        fioCell.setCellValue(fioMemo.getText());
+        dataBdayBornPlaceCell.setCellValue(dataBdayAndLocation.getText());
+        passportidCell.setCellValue(passportID.getText());
+        dateOfIssueCell.setCellValue(dateOfIssue.getText());
+        issueByCell.setCellValue(issueBy.getText());
+        registrationCell.setCellValue(registration.getText());
+        phoneCell.setCellValue(phoneSt.getText());
+        deliveryPlaceCell.setCellValue(address.getText());
+        commentCell.setCellValue(comment.getText());
+
+        FileOutputStream fos = new FileOutputStream(pathToDesk + "\\contactYota.xls");
+
+        wb.write(fos);
+        fos.close();
     }
 
     public void AboutShow() throws IOException { //показываем окно "О программе"
