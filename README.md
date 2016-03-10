@@ -7,4 +7,6 @@ Printing memo for courier
 
 •Printing incoming data.
 
-used lib:htmlunit,pdfbox
+•Save data to Excel.
+
+used lib:htmlunit,pdfbox,apache poi
