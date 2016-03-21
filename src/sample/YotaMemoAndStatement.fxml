@@ -243,9 +243,10 @@
                                     </GridPane.margin>
                                 </TextField>
                                 <Button mnemonicParsing="false" onAction="#PrintStatement" prefWidth="300.0" text="Печать заявления" GridPane.halignment="CENTER" GridPane.rowIndex="10" />
-                                <ComboBox fx:id="docTypeCB" promptText="Выберите тип документа(для MNP)" value="Выберите тип документа(для MNP)" prefWidth="300.0" GridPane.halignment="CENTER" GridPane.rowIndex="11">
+                                <ComboBox fx:id="docTypeCB" promptText="Выберите тип документа" value="Выберите тип документа" prefWidth="300.0" GridPane.halignment="CENTER" GridPane.rowIndex="11">
                                     <items>
                                         <FXCollections fx:factory="observableArrayList">
+                                            <String fx:value="Не полные ПД" />
                                             <String fx:value="Паспорт гражданина РФ" />
                                             <String fx:value="Паспорт иностранного гражданина" />
                                             <String fx:value="Военный билет" />
