@@ -36,7 +36,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class ControllerMemo {
+public class MainController {
     Authorization authorization = new Authorization();
     @FXML
     TextField url, iccidMemo, iccidSt, address, data, fioMemo, fioSt, phoneMemo, phoneSt, comment, dataBdayAndLocation, passportID, dateOfIssue, issueBy, registration, delivData, transferNumber;
@@ -51,7 +51,7 @@ public class ControllerMemo {
     HtmlTextInput Iccid, Address, Data, TimeBegin, TimeEnd, ClientName, ClientPhoneNumber, DateBdayAndLocation, PassportID, DateOfIssueAndIssueBy, Registration;
     HtmlTextArea Comment;
     String defaultURL = "https://partner.yota.ru/rd/vox/order/edit/";
-    String pathToDesk = System.getProperty("user.home") + "/Desktop";
+    String pathToFolder = System.getProperty("user.home") + "/Desktop";
     boolean check = false;
     boolean checkLineIssue = false;
     boolean clearAllOrNotAll = false;
@@ -63,7 +63,7 @@ public class ControllerMemo {
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(f);
         NodeList nodeList = document.getElementsByTagName("entry");
-        pathToDesk = nodeList.item(2).getAttributes().getNamedItem("value").getNodeValue();
+        pathToFolder = nodeList.item(2).getAttributes().getNamedItem("value").getNodeValue();
     }
 
     public void GetData() throws IOException { //получаем данные с портала
@@ -270,7 +270,7 @@ public class ControllerMemo {
                 alert.setContentText("Заполните минимальные данные!");
                 alert.showAndWait();
             } else try {
-                doc = PDDocument.load(new File(pathToDesk + "\\contract_mnp.pdf"));
+                doc = PDDocument.load(new File(pathToFolder + "\\contract_mnp.pdf"));
                 PDDocumentCatalog cat = doc.getDocumentCatalog();
                 PDPage page = cat.getPages().get(0);
                 doc.addPage(page);
@@ -416,7 +416,7 @@ public class ControllerMemo {
                     alert.showAndWait();
                 } else {
                     try {
-                        doc.save(pathToDesk + "\\mnp_complite.pdf");
+                        doc.save(pathToFolder + "\\mnp_complite.pdf");
                         PrinterJob job = PrinterJob.getPrinterJob();
                         job.setPageable(new PDFPageable(doc));
                         if (job.printDialog()) {
@@ -453,10 +453,10 @@ public class ControllerMemo {
                 try {
                     if (docTypeCB.getValue().toString().equals("Выберите тип документа") ||
                             docTypeCB.getValue().toString().equals("Паспорт гражданина РФ")) {
-                        doc = PDDocument.load(new File(pathToDesk + "\\contract_rf.pdf"));
+                        doc = PDDocument.load(new File(pathToFolder + "\\contract_rf.pdf"));
                         passportCheck = true;
                     } else {
-                        doc = PDDocument.load(new File(pathToDesk + "\\contract_ino.pdf"));
+                        doc = PDDocument.load(new File(pathToFolder + "\\contract_ino.pdf"));
                         passportCheck = false;
                     }
 
@@ -677,7 +677,7 @@ public class ControllerMemo {
                     contentStream.close();
 
                     try {
-                        doc.save(pathToDesk + "\\contract_complite.pdf");
+                        doc.save(pathToFolder + "\\contract_complite.pdf");
                         PrinterJob job = PrinterJob.getPrinterJob();
                         job.setPageable(new PDFPageable(doc));
                         if (job.printDialog()) {
@@ -705,7 +705,7 @@ public class ControllerMemo {
 
     public void ExcelSave() throws IOException { //Сохранение ПД в Excel
         try {
-            FileInputStream inputStream = new FileInputStream(pathToDesk + "\\contactYota.xls");
+            FileInputStream inputStream = new FileInputStream(pathToFolder + "\\contactYota.xls");
             Workbook wb = new HSSFWorkbook(inputStream); //Создаем книгу
             Sheet sheet = wb.getSheet("ПД"); //создаем лист
 
@@ -738,7 +738,7 @@ public class ControllerMemo {
             deliveryPlaceCell.setCellValue(address.getText());
             commentCell.setCellValue(comment.getText());
 
-            FileOutputStream fos = new FileOutputStream(pathToDesk + "\\contactYota.xls");
+            FileOutputStream fos = new FileOutputStream(pathToFolder + "\\contactYota.xls");
 
             wb.write(fos);
             fos.close();

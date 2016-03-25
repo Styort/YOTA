@@ -8,15 +8,10 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Properties;
-
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("View/YotaMemoAndStatement.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("View/Main.fxml"));
         primaryStage.setTitle("YOTA");
         primaryStage.setResizable(false);
         primaryStage.setScene(new Scene(root, 500, 600));

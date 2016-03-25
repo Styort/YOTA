@@ -9,7 +9,7 @@
 <map>
 <entry key="login" value="input_your_login"/>
 <entry key="password" value="input_your_password"/>
-<entry key="folder" value="choose_path_to_file"/>
+<entry key="folder" value="choose_path_to_folder"/>
 </map>
 </node>
 </node>

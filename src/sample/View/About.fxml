@@ -10,7 +10,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.text.TextFlow?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controllers.ControllerMemo">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controllers.MainController">
    <children>
       <ImageView fx:id="imageView" fitHeight="200.0" fitWidth="179.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
          <image>
@@ -37,8 +37,8 @@
                   <Label text="Версия:" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
                   <Label text="2016" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
                   <Label text=" Cинёв Виктор" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
-                  <Label text=" 3.0-b" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
-                  <Label text="YOTA Памятка 3.0" GridPane.halignment="CENTER" />
+                  <Label text=" 3.1-b" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
+                  <Label text="YOTA Памятка 3.1" GridPane.halignment="CENTER" />
                   <Label text="Автор идеи:" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
                   <Label text=" Александр Кудряшов" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                </children>

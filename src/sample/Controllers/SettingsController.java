@@ -26,8 +26,7 @@ import java.util.prefs.Preferences;
 public class SettingsController implements Initializable {
     @FXML
     private TextField folderTF,loginTF,passwordTF;
-    @FXML
-    Tab tabAuth, tabFolder;
+
     Preferences preferences = Preferences.userNodeForPackage(SettingsController.class);
     DirectoryChooser chooser = new DirectoryChooser();
 
@@ -44,9 +43,6 @@ public class SettingsController implements Initializable {
     //Считывание настроек
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        tabAuth.setGraphic(new Label("Авторизация"));
-        tabFolder.setGraphic(new Label("Файлы и папки"));
-
         File f = new File("preferences.xml");
         try{
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
