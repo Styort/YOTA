@@ -1,11 +1,13 @@
-# YOTA-Memo
-Printing memo for courier 
+# YOTA
+Print memo for courier.
 
 •Automatic authorization in web site.
 
 •Parsing data for memo from web site.
 
-•Printing incoming data.
+•Parsing data from web site in to pdf.
+
+•Print incoming data.
 
 •Save data to Excel.
 
