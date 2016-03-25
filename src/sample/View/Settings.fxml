@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="350.0" rotateGraphic="true" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controllers.SettingsController">
+  <tabs>
+    <Tab fx:id="tabAuth">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="35.0" layoutY="14.0" text="Логин:" AnchorPane.leftAnchor="15.0" />
+                  <TextField fx:id="loginTF" layoutX="35.0" layoutY="39.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+                  <TextField fx:id="passwordTF" layoutX="35.0" layoutY="101.0" prefHeight="25.0" prefWidth="280.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+                  <Label layoutX="35.0" layoutY="76.0" text="Пароль:" AnchorPane.leftAnchor="15.0" />
+                  <CheckBox layoutX="36.0" layoutY="141.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" selected="true" text="Автоматическая авторизация" AnchorPane.leftAnchor="15.0" />
+                  <Button layoutX="120.0" layoutY="177.0" mnemonicParsing="false" onAction="#saveAuthSettings" text="Сохранить" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="120.0" />
+               </children></AnchorPane>
+      </content>
+    </Tab>
+    <Tab fx:id="tabFolder">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="22.0" layoutY="14.0" text="Путь к папке с файлами:" AnchorPane.leftAnchor="15.0" />
+                  <TextField fx:id="folderTF" layoutX="22.0" layoutY="40.0" prefHeight="25.0" prefWidth="250.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="80.0" />
+                  <Button layoutX="299.0" layoutY="40.0" mnemonicParsing="false" onAction="#setFolder" text="Обзор" AnchorPane.rightAnchor="15.0" />
+               </children></AnchorPane>
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>

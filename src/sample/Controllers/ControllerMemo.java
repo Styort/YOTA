@@ -1,8 +1,7 @@
-package sample;
+package sample.Controllers;
 
 import com.gargoylesoftware.htmlunit.html.*;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +19,14 @@ import org.apache.pdfbox.printing.PDFPageable;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import sample.Authorization;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.Color;
 import java.awt.Font;
@@ -32,7 +38,6 @@ import java.util.Locale;
 
 public class ControllerMemo {
     Authorization authorization = new Authorization();
-
     @FXML
     TextField url, iccidMemo, iccidSt, address, data, fioMemo, fioSt, phoneMemo, phoneSt, comment, dataBdayAndLocation, passportID, dateOfIssue, issueBy, registration, delivData, transferNumber;
     @FXML
@@ -51,6 +56,15 @@ public class ControllerMemo {
     boolean checkLineIssue = false;
     boolean clearAllOrNotAll = false;
     boolean passportCheck = false;
+
+    public void LoadSettings() throws ParserConfigurationException, IOException, SAXException {
+        File f = new File("preferences.xml");
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(f);
+        NodeList nodeList = document.getElementsByTagName("entry");
+        pathToDesk = nodeList.item(2).getAttributes().getNamedItem("value").getNodeValue();
+    }
 
     public void GetData() throws IOException { //получаем данные с портала
         clearAllOrNotAll = true;
@@ -87,6 +101,7 @@ public class ControllerMemo {
                     String data = dl.substring(0, 10);
                     String location = dl.substring(11, dl.length());
                     dataBdayAndLocation.appendText(data + " " + location);
+
                     phoneMemo.appendText(ClientPhoneNumber.getDefaultValue());
                     String ph = ClientPhoneNumber.getDefaultValue().replaceAll("[\\+\\(\\)]", ""); //убираем из номера телефона символы '+','(',')'
                     phoneSt.appendText(ph.substring(1, ph.length())); //добавляем в текстбокс номер телефона без 7-ки.
@@ -148,13 +163,13 @@ public class ControllerMemo {
         registration.clear();
         delivData.clear();
         transferNumber.clear();
-        operatorCB.setPromptText("Выберите оператора(для MNP)");
-        docTypeCB.setPromptText("Выберите тип документа");
+        operatorCB.setValue("Выберите оператора(для MNP)");
+        docTypeCB.setValue("Выберите тип документа");
         clearAllOrNotAll = false;
     }
 
 
-    public void LogInYOTA() { //авторизируемся в портале
+    public void LogInYOTA() throws ParserConfigurationException, SAXException, IOException { //авторизируемся в портале
         authorization.LoginInWebsite();
     }
 
@@ -243,11 +258,12 @@ public class ControllerMemo {
         }
     }
 
-    public void PrintStatement(ActionEvent actionEvent) throws IOException, PrinterException { //выводим на печать заявление
+    public void PrintStatement(ActionEvent actionEvent) throws IOException, PrinterException, ParserConfigurationException, SAXException { //выводим на печать заявление
+        LoadSettings();
         PDDocument doc;
         if (actionEvent.getTarget().toString().contains("Печать MNP")) {
             if (iccidSt.getText().isEmpty() || fioSt.getText().isEmpty() || dataBdayAndLocation.getText().isEmpty() || phoneSt.getText().isEmpty()
-                     || delivData.getText().isEmpty() || transferNumber.getText().isEmpty()) {
+                    || delivData.getText().isEmpty() || transferNumber.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Ошибка!");
                 alert.setHeaderText("Не все данные получены.");
@@ -341,7 +357,7 @@ public class ControllerMemo {
                 contentStream.moveTextPositionByAmount(-125, -113);
                 contentStream.drawString(operatorCB.getValue().toString());
 
-                if(!docTypeCB.getValue().equals("Не полные ПД")){
+                if (!docTypeCB.getValue().equals("Не полные ПД")) {
                     //Добавляем тип документа
                     contentStream.moveTextPositionByAmount(-46, 344);
                     contentStream.drawString(docTypeCB.getValue().toString());
@@ -419,7 +435,7 @@ public class ControllerMemo {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ошибка");
                 alert.setHeaderText(null);
-                alert.setContentText("      Файл с заявлением не найден. \n Переместите файл на рабочий стол.");
+                alert.setContentText("      Файл с заявлением не найден. \n Переместите файл в указанную в настройках папку.");
                 alert.showAndWait();
             }
         }
@@ -435,12 +451,11 @@ public class ControllerMemo {
                 alert.showAndWait();
             } else {
                 try {
-                    if(docTypeCB.getValue().toString().equals("Выберите тип документа")||
-                        docTypeCB.getValue().toString().equals("Паспорт гражданина РФ")){
+                    if (docTypeCB.getValue().toString().equals("Выберите тип документа") ||
+                            docTypeCB.getValue().toString().equals("Паспорт гражданина РФ")) {
                         doc = PDDocument.load(new File(pathToDesk + "\\contract_rf.pdf"));
                         passportCheck = true;
-                    }
-                    else {
+                    } else {
                         doc = PDDocument.load(new File(pathToDesk + "\\contract_ino.pdf"));
                         passportCheck = false;
                     }
@@ -597,20 +612,34 @@ public class ControllerMemo {
                     }
                     int xAmountDataIs = 0;
                     int xAmountIsBy = 0;
+                    int yAmountPassID = 0;
+                    //Добавляем адрес места жительства
+                    if (!registration.getText().isEmpty()) {
+                        if (registration.getText().length() < 34) {
+                            contentStream.moveTextPositionByAmount(-37, 47);
+                            contentStream.drawString(registration.getText());
+                            yAmountPassID = 46;
+                        } else {
+                            contentStream.moveTextPositionByAmount(-37, 47);
+                            contentStream.drawString(registration.getText().substring(0, 34));
+                            contentStream.moveTextPositionByAmount(0, -15);
+                            contentStream.drawString(registration.getText().substring(34, registration.getText().length()));
+                            yAmountPassID = 61;
+                        }
+                    }
                     //Добавляем серию и номер паспорта
                     if (!passportID.getText().isEmpty()) {
-                        if(passportCheck){
+                        if (passportCheck) {
                             String passID = passportID.getText().replaceAll("\\s+", "");
-                            contentStream.moveTextPositionByAmount(-75, 94);
+                            contentStream.moveTextPositionByAmount(-37, yAmountPassID);
                             contentStream.drawString(passID.substring(0, 4));
                             contentStream.moveTextPositionByAmount(88, 0);
                             contentStream.drawString(passID.substring(4, passID.length()));
                             xAmountDataIs = 137;
                             xAmountIsBy = -299;
 
-                        }
-                        else {
-                            contentStream.moveTextPositionByAmount(-75, 94);
+                        } else {
+                            contentStream.moveTextPositionByAmount(-37, yAmountPassID);
                             contentStream.drawString(passportID.getText());
                             xAmountDataIs = 250;
                             xAmountIsBy = -324;
@@ -643,31 +672,6 @@ public class ControllerMemo {
                             checkLineIssue = true;
                         }
                     }
-                    //Добавляем адрес места жительства
-                    if (!registration.getText().isEmpty()) {
-                        if (registration.getText().length() < 34) {
-                            if (checkLineIssue) {
-                                contentStream.moveTextPositionByAmount(37, -14);
-                                contentStream.drawString(registration.getText());
-                            } else {
-                                contentStream.moveTextPositionByAmount(37, -30);
-                                contentStream.drawString(registration.getText());
-                            }
-                        } else {
-                            if (checkLineIssue) {
-                                contentStream.moveTextPositionByAmount(37, -15);
-                                contentStream.drawString(registration.getText().substring(0, 34));
-                                contentStream.moveTextPositionByAmount(0, -15);
-                                contentStream.drawString(registration.getText().substring(34, registration.getText().length()));
-                            } else {
-                                contentStream.moveTextPositionByAmount(37, -30);
-                                contentStream.drawString(registration.getText().substring(0, 34));
-                                contentStream.moveTextPositionByAmount(0, -15);
-                                contentStream.drawString(registration.getText().substring(34, registration.getText().length()));
-                            }
-                        }
-                    }
-
 
                     contentStream.endText();
                     contentStream.close();
@@ -691,11 +695,12 @@ public class ControllerMemo {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Ошибка");
                     alert.setHeaderText(null);
-                    alert.setContentText("      Файл с заявлением не найден. \n Переместите файл на рабочий стол.");
+                    alert.setContentText("      Файл с заявлением не найден. \n Переместите файл в указанную в настройках папку..");
                     alert.showAndWait();
                 }
             }
         }
+
     }
 
     public void ExcelSave() throws IOException { //Сохранение ПД в Excel
@@ -747,15 +752,20 @@ public class ControllerMemo {
     }
 
     public void AboutShow() throws IOException { //показываем окно "О программе"
-        Parent root = FXMLLoader.load(getClass().getResource("About.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/sample/View/About.fxml"));
         Stage stage = new Stage();
         stage.setTitle("О программе");
         stage.setResizable(false);
         stage.setScene(new Scene(root, 450, 200));
         stage.show();
-        stage.setOnCloseRequest(t -> {
-            Platform.exit();
-            System.exit(0);
-        });
+    }
+
+    public void OpenSettings(ActionEvent actionEvent) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/sample/View/Settings.fxml"));
+        Stage stage = new Stage();
+        stage.setTitle("Настройки");
+        stage.setResizable(false);
+        stage.setScene(new Scene(root, 350, 350));
+        stage.show();
     }
 }

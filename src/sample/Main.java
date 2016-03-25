@@ -5,20 +5,33 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("YotaMemoAndStatement.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("View/YotaMemoAndStatement.fxml"));
         primaryStage.setTitle("YOTA");
         primaryStage.setResizable(false);
         primaryStage.setScene(new Scene(root, 500, 600));
         primaryStage.show();
+        primaryStage.getIcons().add(new Image(this.getClass().getResourceAsStream("/image/taskbar.png")));
         primaryStage.setOnCloseRequest(t -> {
             Platform.exit();
             System.exit(0);
         });
+
+        //File configFile = new File("config.properties");
+        //InputStream inputStream = new FileInputStream(configFile);
+        //Properties props = new Properties();
+
+        //props.load(inputStream);
     }
 
 

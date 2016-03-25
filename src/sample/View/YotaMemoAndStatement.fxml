@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.ControllerMemo">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controllers.ControllerMemo">
     <top>
         <GridPane>
             <columnConstraints>
@@ -24,6 +24,9 @@
                         <Menu mnemonicParsing="false" text="Файл">
                             <items>
                                 <MenuItem mnemonicParsing="false" onAction="#LogInYOTA" text="Войти в портал" />
+                            </items>
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#OpenSettings" text="Настройки" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Редактирование">
