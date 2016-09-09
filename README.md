@@ -13,8 +13,8 @@ Print memo for courier.
 
 used lib:htmlunit,pdfbox,apache poi
 
-<p align="left"><img src="https://pp.vk.me/c636920/v636920263/24364/jjETBdKBKMU.jpg" width="400" height="495"></p>
-<p align="right"><img src="https://pp.vk.me/c636920/v636920263/2436c/TF9w40jE8fc.jpg" width="400" height="495"></p>
+<img align="left" src="https://pp.vk.me/c636920/v636920263/24364/jjETBdKBKMU.jpg" width="400" height="495">
+<img align="right" src="https://pp.vk.me/c636920/v636920263/2436c/TF9w40jE8fc.jpg" width="400" height="495">
 <p align="center">
   <img align="center" src="https://pp.vk.me/c636920/v636920263/24373/zYMuc3g86h4.jpg" width="300" height="319">
 </p>
